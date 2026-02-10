@@ -1,0 +1,563 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slides1</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="ant3475--bioinformatique-évolutive-humaine">ANT3475 : Bioinformatique évolutive humaine</h1>
+<h2 id="lecture-1--la-ligne-de-commande-unix">Lecture 1 : La ligne de commande Unix</h2>
+<p>Le matériel de cours d’aujourd’hui est modifié et traduit en français à partir de :</p>
+<p>Programming for Biology <a href="http://programmingforbiology.org">programmingforbiology.org</a> et a été initialement rédigé par Simon Prochnik et Sofia Robb. Une grande partie de ce contenu est disponible gratuitement en ligne. Il est également proposé sous forme d’un excellent <a href="%5Bhttps://meetings.cshl.edu/courses.aspx?course=c-info&amp;year=24%5D">cours intensif de 2 semaines</a> au Cold Spring Harbor Laboratory pour apprendre Python dans le cadre de la bio-informatique.</p>
+<h1 id="grande-idée">Grande idée</h1>
+<h2 id="pourquoi-">Pourquoi ?</h2>
+<p>Pourquoi est-il important pour <strong>les anthropologues biologistes</strong> d’apprendre à programmer ?</p>
+<p>Vous avez peut-être déjà une idée de la réponse à cette question puisque vous êtes ici.</p>
+<p>Nous croyons fermement que savoir programmer est tout aussi essentiel que savoir réaliser une électrophorèse sur gel ou configurer une réaction PCR. Les données que nous obtenons aujourd’hui à partir d’une seule expérience peuvent être considérables. Souvent, ces données doivent être reformattées, filtrées et analysées d’une manière spécifique. La programmation vous permet de réaliser ces tâches de manière <strong>efficace</strong> et <strong>reproductible</strong>.</p>
+<p>Quels sont nos conseils pour réussir dans ce cours de programmation ?</p>
+<ol>
+<li>Pratiquez, pratiquez, pratiquez. Passez autant de temps que possible à coder réellement.</li>
+<li>Écrivez seulement une ou deux lignes de code, puis testez-les. Si vous écrivez trop de lignes d’un coup, il sera plus difficile de déboguer en cas d’erreur.</li>
+<li>Les erreurs ne sont pas des échecs. Chaque erreur est une occasion d’apprendre. Chaque erreur que vous corrigez est un grand succès. Corriger des erreurs vous aidera à consolider vos connaissances.</li>
+<li>Ne passez pas trop de temps à essayer de résoudre un problème tout seul. Bien qu’il soit formateur de tenter de le résoudre par vous-même, il peut être frustrant de rester bloqué pendant longtemps. Je suis là pour vous aider, alors n’hésitez pas à demander.</li>
+<li>Les cours magistraux sont importants, mais la pratique est plus importante encore.</li>
+<li>Notre objectif principal est de vous apprendre progressivement à résoudre les problèmes par vous-même.</li>
+</ol>
+<hr>
+<h1 id="unix-linux-mac-os">Unix (linux, mac OS)</h1>
+<h3 id="aperçu-d’unix">Aperçu d’Unix</h3>
+<h4 id="qu’est-ce-que-la-ligne-de-commande-">Qu’est-ce que la ligne de commande ?</h4>
+<p>La plupart des outils de bio-informatique sont conçus pour fonctionner dans la ligne de commande, sans interface graphique. Bien souvent, un outil en ligne de commande est plus polyvalent qu’un outil graphique, car vous pouvez aisément combiner plusieurs outils en scripts automatisés qui accomplissent des tâches personnalisées de manière séquentielle, sans intervention humaine. Presque tout le travail en bio-informatique se fait sur un système d’exploitation de type UNIX comme mac OSX ou linux.</p>
+<p>Derrière l’interface graphique (GUI) de Mac OSX se cache le système d’exploitation (OS). Il est basé sur une version d’Unix. Linux est assez similaire et constitue également un système d’exploitation très répandu en bio-informatique, avec des variantes comme Red Hat, Ubuntu et autres.</p>
+<p>La ligne de commande vous donne accès au cœur du système d’exploitation et facilite l’écriture de logiciels et de scripts personnalisés.</p>
+<p>Dans ce cours, nous allons utiliser Linux et R pour écrire des scripts et les exécuter depuis la ligne de commande.</p>
+<p>Le système Unix est complexe et il y a toujours plus à apprendre. Nous n’aborderons ici que l’essentiel pour démarrer.</p>
+<h3 id="les-bases">Les bases</h3>
+<h4 id="se-connecter-à-votre-ordinateur">Se connecter à votre ordinateur</h4>
+<p>Presque tout notre travail dans ce cours sera effectué sur un ordinateur virtuel dans le cloud. Cependant, nous devons y accéder d’une manière particulière. Si vous utilisez un ordinateur Mac ou Linux, c’est très simple : il vous suffit d’ouvrir un programme appelé <strong>Terminal</strong>. Sous Windows, les choses sont un peu plus compliquées, car ce système n’est pas basé sur Unix. Nous utiliserons un programme appelé <strong>PowerShell</strong>. Une version devrait déjà être installée, mais vous souhaiterez peut-être passer à la version 7.</p>
+<h5 id="installation-de-powershell">Installation de Powershell</h5>
+<ol>
+<li>Ouvrez le <strong>Microsoft Store</strong></li>
+<li>Recherchez <strong>PowerShell</strong></li>
+<li>Installez</li>
+</ol>
+<h4 id="créer-un-compte-sur-notre-serveur-linux-dans-le-cloud">Créer un compte sur notre serveur linux dans le cloud</h4>
+<ol>
+<li>Rendez-vous sur ce site pour créer un compte. Veuillez choisir un nom d’utilisateur court, qui soit simplement votre prénom. Assurez-vous de retenir votre mot de passe !<br>
+<a href="https://jupyter.ant3475.calculquebec.cloud/">https://jupyter.ant3475.calculquebec.cloud/</a></li>
+<li>Attendez que je vous donne l’accès au serveur</li>
+</ol>
+<h4 id="faire-apparaître-la-ligne-de-commande">Faire apparaître la ligne de commande</h4>
+<p>Pour faire apparaître la ligne de commande sur Windows, ouvrez <strong>PowerShell</strong>. Cela ouvrira une fenêtre semblable à :</p>
+<p><img src="https://github.com/nomascus/ANT3814/blob/main/FILES/windowsTerminal.png?raw=true" alt="enter image description here"></p>
+<p>Pour faire apparaître la ligne de commande sur Mac, ouvrez <strong>Terminal</strong> depuis le Launchpad. Cela ouvrira une fenêtre semblable à :</p>
+<p><img src="https://github.com/nomascus/ANT3814/blob/main/FILES/macTerminal.png?raw=true" alt="enter image description here"></p>
+<p>Pour faire apparaître la ligne de commande sur Linux, utilisez le <strong>Finder</strong> pour naviguer jusqu’à <em>Applications-&gt;Utilities</em> et double-cliquez sur l’application <strong>Terminal</strong>. Cela ouvrira une fenêtre similaire à :</p>
+<p><img src="https://github.com/nomascus/ANT3814/blob/main/FILES/UbuntuTerminal.png?raw=true" alt="enter image description here"></p>
+<p>Vous pouvez ouvrir plusieurs fenêtres de Terminal ou PowerShell en même temps. Cela s’avère souvent pratique. Une façon courante de travailler est d’ouvrir votre éditeur de code dans une fenêtre, d’exécuter votre code dans une deuxième fenêtre et d’observer vos données et vos fichiers dans une troisième.</p>
+<p>Je vous conseille de placer l’icône de Terminal dans la barre de raccourcis en bas de votre écran, puisque vous l’utiliserez fréquemment.</p>
+<h4 id="se-connecter-à-notre-serveur-dans-le-cloud">Se connecter à notre serveur dans le cloud</h4>
+<p>Pour accéder au serveur, vous devez taper la commande <strong>ssh</strong>, qui signifie “secure shell”. Elle ouvre un tunnel chiffré vers l’ordinateur distant dans le cloud.</p>
+<pre><code>ssh userid@ant3475.calculquebec.cloud
+</code></pre>
+<p>Par exemple, pour mon nom d’utilisateur :</p>
+<pre><code>ssh orkin@ant3475.calculquebec.cloud
+</code></pre>
+<p>Appuyez ensuite sur la touche Enter.</p>
+<p>Si le terminal vous demande de confirmer une empreinte de sécurité, tapez <strong>yes</strong> et appuyez sur Enter. Vous ne devriez avoir à accorder l’autorisation que la première fois.</p>
+<p>Ensuite, entrez le mot de passe que vous avez défini en créant votre compte, puis appuyez sur enter. Vous ne verrez pas de caractères s’afficher pendant que vous saisissez votre mot de passe, ce qui est une mesure de sécurité. Votre écran de terminal devrait ressembler à ceci :</p>
+<p><img src="https://github.com/nomascus/ANT3814/blob/main/FILES/cloudTerminal.png?raw=true" alt="enter image description here"></p>
+<p>Vous êtes maintenant connecté à un cluster de serveurs Linux dans le cloud. Bravo !</p>
+<h4 id="d’accord-je-suis-connecté…-et-maintenant-">D’accord, je suis connecté… et maintenant ?</h4>
+<p>La fenêtre de terminal exécute un <strong>shell</strong> appelé « bash ». Le shell est une boucle qui :</p>
+<ol>
+<li>Affiche un invite de commande (prompt)</li>
+<li>Lit une ligne de texte que vous tapez au clavier</li>
+<li>Décompose cette ligne en une ou plusieurs commandes</li>
+<li>Exécute ces commandes (qui envoient généralement une sortie à l’écran)</li>
+<li>Retourne à l’étape 1</li>
+</ol>
+<p>Il existe plusieurs shells aux noms étranges comme <strong>bash</strong>, <strong>sh</strong>, <strong>csh</strong>, <strong>tcsh</strong>, <strong>ksh</strong>, <strong>zsh</strong>. La partie « sh » signifie shell. Chaque shell a sa propre syntaxe et ses particularités. <strong>bash</strong> est standard dans les systèmes Linux, mais Mac OS est récemment passé de bash à <strong>zsh</strong>, bien qu’ils soient très similaires.</p>
+<h4 id="l’invite-de-commande-prompt">L’invite de commande (prompt)</h4>
+<p>La plupart des tâches en bio-informatique se font en lançant des logiciels dans un shell, donc il est utile de prendre un peu de temps pour bien maîtriser le shell.</p>
+<p>Voici un exemple d’invite de commande :</p>
+<pre><code>[orkin@login1] ~$
+</code></pre>
+<p>En voici un autre :</p>
+<pre><code>$ 1:12PM&gt;
+</code></pre>
+<p>Et encore un autre :</p>
+<pre><code>[CharlesDarwin@narval3 projects]$
+</code></pre>
+<p>Ce que vous voyez dépend de la configuration faite par l’administrateur du système ou de vos propres paramètres (mais nous n’aborderons pas ce dernier point ici).</p>
+<p>L’invite de commande vous indique que le shell est prêt à recevoir vos instructions. La plupart des commandes s’exécutent presque instantanément. Pour une commande plus longue, l’invite ne réapparaîtra que lorsqu’elle sera terminée et que le système sera prêt à accepter votre prochaine requête.</p>
+<h4 id="exécution-de-commandes">Exécution de commandes</h4>
+<p>Vous tapez une commande, puis appuyez sur <strong>Enter</strong> pour l’exécuter. Si la commande produit une sortie, elle s’affiche à l’écran. Exemple :</p>
+<pre><code>[orkin@login1] ~$ ls 
+[orkin@login1] ~$ projects scratch
+</code></pre>
+<p>Ici, la commande est <code>ls</code>, qui affiche la liste des fichiers et répertoires dans le répertoire courant (nous verrons cela sous peu). Sous la liste, l’invite de commande réapparaît.</p>
+<p>Certaines commandes prennent plus de temps à s’exécuter. Tant que la commande n’est pas terminée, l’invite de commande ne réapparaît pas. Vous pouvez continuer à travailler en parallèle, soit en ouvrant un nouveau shell (dans le menu File de Terminal), soit en exécutant la commande en arrière-plan avec un <strong>&amp;</strong> :</p>
+<pre><code>[orkin@login1] ~$ long_running_application &amp;
+[orkin@login1] ~$
+</code></pre>
+<p>La commande s’exécutera en arrière-plan. Si elle produit une sortie, celle-ci s’affichera dans la fenêtre du terminal. Vous pouvez vouloir enregistrer cette sortie dans un fichier (on parlera plus tard de la redirection).</p>
+<h4 id="édition-de-la-ligne-de-commande">Édition de la ligne de commande</h4>
+<p>La plupart des shells offrent la possibilité d’éditer la ligne de commande. Tant que vous n’avez pas appuyé sur <strong>Enter</strong>, vous pouvez revenir sur la ligne et la modifier grâce au clavier. Voici quelques raccourcis utiles :</p>
+<ul>
+<li><strong>Backspace</strong> : Supprime le caractère précédent et recule d’un espace.</li>
+<li><strong>Flèches gauche/droite</strong> : Déplacent le curseur d’un caractère à gauche ou à droite.</li>
+<li><strong>control-a (^a)</strong> : Déplace le curseur au début de la ligne. (Astuce : A est la première lettre de l’alphabet)</li>
+<li><strong>control-e (^e)</strong> : Déplace le curseur à la fin de la ligne. (Astuce : E pour End)</li>
+<li><strong>control-d (^d)</strong> : Supprime le caractère situé sous le curseur. D = Delete.</li>
+<li><strong>control-k (^k)</strong> : Supprime de la position du curseur jusqu’à la fin de la ligne. k = kill. (Le texte est placé dans un “kill buffer”, équivalent à un « couper »)</li>
+<li><strong>control-y (^y)</strong> : Colle le contenu du kill buffer à la position du curseur. y = yank. (Équivalent à « coller »)</li>
+<li><strong>Flèches haut/bas</strong> : Défilent dans l’historique des commandes. Vous pouvez ainsi réexécuter une commande précédente et éventuellement la modifier avant de l’exécuter.</li>
+<li><strong>control-c (^c)</strong> :  Envoyez un signal d’interruption à la commande pour l’arrêter. Pensez à C pour « cancel » (annuler).</li>
+<li></li>
+</ul>
+<p>Il existe aussi quelques commandes de shell utiles :</p>
+<ul>
+<li><code>history</code> : Affiche l’historique des commandes récentes, numérotées.</li>
+<li><code>!&lt;number&gt;</code> : Réexécute une ancienne commande en se basant sur son numéro (affiché par <code>history</code>).</li>
+<li><code>!!</code> : Réexécute la dernière commande.</li>
+</ul>
+<p><strong>bash</strong> propose l’auto-complétion et la correction orthographique. Si vous tapez une partie d’une commande et appuyez sur la touche <strong>Tab</strong>, il vous affichera toutes les complétions possibles. Exemple :</p>
+<pre><code>[orkin@login1] ~$ le&lt; less lessecho lessfile lesskey lesspipe let lexgrog
+[orkin@login1] ~$ le
+</code></pre>
+<p>Si vous appuyez sur <strong>Tab</strong> après avoir partiellement saisi une commande, mais avant <strong>Enter</strong>, <strong>bash</strong> vous proposera aussi la liste des fichiers existants, car de nombreuses commandes opèrent sur des fichiers.</p>
+<h4 id="wildcards-caractères-génériques">Wildcards (caractères génériques)</h4>
+<p>Vous pouvez utiliser des caractères génériques pour désigner des fichiers. <code>*</code> remplace zéro ou plusieurs caractères, <code>?</code> remplace n’importe quel caractère unique. Par exemple, pour lister tous les fichiers ayant l’extension “.txt”, exécutez <code>ls</code> avec la forme générique <code>*.txt</code> :</p>
+<pre><code>[orkin@login1] ~$ ls *.txt 
+data.txt readme.txt results.txt transitions.txt
+[orkin@login1] ~$
+</code></pre>
+<p>Il existe également des formes plus avancées de motifs génériques que vous pouvez découvrir dans la page de manuel de <strong>bash</strong>. Par exemple, pour faire correspondre les fichiers commençant par “f” ou “g” et se terminant par “.txt”, vous pouvez mettre les caractères entre crochets <code>[fg]</code>. Exemple :</p>
+<pre><code>[orkin@login1] ~$ ls [rd]*.txt data.txt readme.txt results.txt 
+[orkin@login1] ~$
+</code></pre>
+<p>Vous pouvez aussi indiquer des intervalles de caractères comme <code>[a-e]</code> ou <code>[1-5]</code>.</p>
+<h3 id="les-répertoires-et-leur-organisation">Les répertoires et leur organisation</h3>
+<p>Un ordinateur est équipé d’un espace de stockage pour les scripts, données, images, le système d’exploitation, etc. Historiquement, on a eu des disquettes, puis des disques durs, et maintenant des SSD (Solid State Drives). Parlons de l’organisation de ce stockage afin de vous aider à localiser vos travaux. Les répertoires (ou dossiers) se créent à l’intérieur d’autres répertoires. Un répertoire est spécial : le <strong>répertoire racine</strong> (root directory), noté <code>/</code>. Les fichiers associés sont placés à l’intérieur de répertoires pour rester organisés, créant ainsi une structure en arborescence. On peut la représenter comme un arbre à l’envers.</p>
+<p><strong>Exemple de structure de répertoires Linux depuis la racine :</strong></p>
+<p><img src="https://github.com/nomascus/ANT3814/blob/main/FILES/directory_structure.png?raw=true" alt="enter image description here"></p>
+<h4 id="home-sweet-home-votre-répertoire-personnel-">Home sweet home (votre répertoire personnel <code>~</code>)</h4>
+<p>Lorsque vous vous connectez, vous vous trouvez dans votre répertoire personnel (home directory), généralement dans <code>/home</code> (sur mac OS, c’est dans <code>/Users</code>). Si votre identifiant est <code>jdesjardins</code>, votre répertoire s’appelle alors <code>/home/jdesjardins</code>. On appelle cela un chemin d’accès ou <strong>path</strong>. Unix est rempli d’abréviations pour vous éviter de trop taper. Vous pouvez ainsi raccourcir ce chemin en <code>~</code>. Le caractère <code>~</code> s’appelle “tilde” et se trouve en haut à gauche de votre clavier.</p>
+<p>Dans votre répertoire personnel, vous pouvez sauvegarder, supprimer, ouvrir et déplacer des fichiers et d’autres répertoires. En général, vous pouvez lire, mais pas modifier, les fichiers situés en dehors de ce répertoire.</p>
+<p>Pour voir le contenu de votre répertoire personnel, utilisez la commande <code>ls</code> :</p>
+<p><img src="https://github.com/nomascus/ANT3814/blob/main/FILES/ls-home.png?raw=true" alt="enter image description here"></p>
+<p>Vous pouvez modifier le comportement d’une commande avec des options, par exemple <code>ls -aF</code> (l’option <code>a</code> pour tout lister, même les fichiers cachés qui commencent par un <code>.</code> et l’option <code>F</code> pour “decorated listing”). Cela ajoute par exemple un <code>/</code> à la fin des noms de répertoires :</p>
+<p><img src="https://github.com/nomascus/ANT3814/blob/main/FILES/ls-aF.png?raw=true" alt="enter image description here"></p>
+<p>Ne supprimez pas les fichiers cachés. Beaucoup sont cruciaux pour la configuration de vos commandes et autres programmes. Par exemple, le fichier <code>.bashrc</code> renferme la configuration pour le shell <strong>bash</strong>. Vous pourrez l’éditer plus tard (une fois que vous saurez ce que vous faites) pour changer l’invite de commande ou le chemin de recherche des commandes.</p>
+<h4 id="changer-de-répertoire">Changer de répertoire</h4>
+<p>Vous pouvez vous déplacer d’un répertoire à l’autre grâce à la commande <code>cd</code> (change directory). Indiquez le nom du répertoire où vous souhaitez aller, ou laissez vide pour retourner au répertoire personnel. Utilisez <code>pwd</code> (print working directory) pour voir où vous êtes (ou fiez-vous à l’invite de commande, si configurée) :</p>
+<pre><code>[orkin@login1] $ cd projects
+[orkin@login1 projects]$ pwd /home/orkin/projects
+[orkin@login1 projects]$ cd
+[orkin@login1 ~] $ cd /
+[orkin@login1 /] $ ls -aF
+</code></pre>
+<p><img src="https://github.com/nomascus/ANT3814/blob/main/FILES/ls-root.png?raw=true" alt="enter image description here"></p>
+<p>Chaque répertoire contient deux répertoires cachés, <code>.</code> et <code>..</code>. <code>.</code> désigne toujours le répertoire courant, <code>..</code> son répertoire parent. Cela vous permet par exemple de remonter d’un niveau :</p>
+<pre><code>[orkin@login1 scratch]$ cd ..
+</code></pre>
+<p>ou de faire des déplacements plus complexes :</p>
+<pre><code>[orkin@login1 scratch] cd ../../orkin/scratch
+</code></pre>
+<p>Cette commande remonte de deux niveaux, puis descend dans un répertoire appelé <code>orkin</code> à l’intérieur d’un répertoire appelé <code>scratch</code>.</p>
+<p>Si vous êtes perdu, la commande <code>pwd</code> vous indique le chemin complet de votre répertoire actuel :</p>
+<pre><code>[orkin@login1 scratch]$ pwd
+/home/orkin/scratch
+</code></pre>
+<h4 id="chemins-absolus-et-chemins-relatifs">Chemins absolus et chemins relatifs</h4>
+<p>Vous pouvez spécifier un chemin de deux façons : un chemin absolu commence toujours par <code>/</code> et est lu à partir de la racine, tandis qu’un chemin relatif commence par n’importe quel autre caractère et est lu à partir de votre position courante. Voici deux façons d’accéder au répertoire <code>projects</code> dans le répertoire personnel d’<code>orkin</code>. En partant de <code>scratch</code>, on peut remonter d’un niveau, puis entrer dans <code>projects</code> (chemin relatif), ou bien partir de la racine <code>/</code>, puis <code>home</code>, <code>orkin</code> et <code>projects</code> (chemin absolu).</p>
+<pre><code>[orkin@login1 scratch] cd ../project  
+[orkin@login1 project] $ cd
+[orkin@login1 /] $ cd /home/orkin/project 
+[orkin@login1 project] $
+</code></pre>
+<h3 id="commandes-unix-essentielles">Commandes Unix essentielles</h3>
+<p>À l’exception de certaines commandes intégrées dans le shell (par ex. <code>history</code>, <code>for</code>, <code>if</code>), toutes les commandes Unix sont de véritables programmes exécutables. Lorsque vous tapez le nom d’une commande, le shell cherche dans tous les répertoires listés dans la variable d’environnement PATH un exécutable de ce nom. S’il le trouve, il exécute la commande. Sinon, il vous indique qu’il ne l’a pas trouvée.</p>
+<p>La plupart des commandes résident dans <code>/bin</code>, <code>/sbin</code>, <code>/usr/bin</code>, <code>/usr/sbin/</code> ou <code>/usr/local/bin</code>.</p>
+<h4 id="obtenir-des-informations-sur-les-commandes">Obtenir des informations sur les commandes</h4>
+<p>La commande <code>man</code> vous donne un résumé de la commande. Par exemple :</p>
+<pre><code>[orkin@login1] $ man wc Formatting page, please wait... WC(1) WC(1)
+
+NAME wc - print the number of bytes, words, and lines in files ...
+</code></pre>
+<h4 id="arguments-et-options-en-ligne-de-commande">Arguments et options en ligne de commande</h4>
+<p>De nombreuses commandes acceptent des arguments, souvent le nom de fichiers sur lesquels opérer. La plupart acceptent également des <strong>options</strong> (appelées “switches”) pour ajuster leur comportement. Certaines commandes reconnaissent les options “courtes” (-c, -l, etc.), d’autres reconnaissent des options “longues” (-- chars, --lines, etc.).</p>
+<p>Le programme <code>wc</code> (word count) est un exemple : il reconnaît <code>-c</code>, <code>-w</code> et <code>-l</code> (ou <code>--chars</code>, <code>--words</code>, <code>--lines</code>) afin de compter les caractères, les mots et les lignes d’un fichier texte. Les deux exemples ci-dessous comptent le nombre de caractères et de lignes du fichier <code>/var/log/README</code> :</p>
+<pre><code>[orkin@login1 ~] $ wc -c -l /var/log/README 25 150 /var/log/README
+[orkin@login1 ~] $ wc --chars --lines /var/log/messages 25 150 /var/log/README
+</code></pre>
+<p>Vous pouvez même regrouper plusieurs options courtes :</p>
+<pre><code>[orkin@login1 ~] $ wc -cl 
+/var/log/README 25 150 /var/log/README
+</code></pre>
+<p>Beaucoup de commandes affichent un résumé rapide lorsque vous les appelez avec <code>-h</code> ou <code>--help</code>.</p>
+<h4 id="espaces-tabulations-et-caractères-de-fin-de-ligne">Espaces, tabulations et caractères de fin de ligne</h4>
+<p>Le shell utilise l’espace pour séparer les arguments. Si vous voulez inclure un espace (ou autre caractère blanc, tabulation, nouvelle ligne, etc.) dans un argument, placez ce texte entre guillemets simples. Exemple :</p>
+<pre><code>mail -s 'An important message' 'Bob Ghost [bob@ghost.org](mailto:bob@ghost.org)'
+</code></pre>
+<p>Ici, <code>-s</code> signifie “subject” pour le courriel. Comme le sujet contient des espaces, nous plaçons cette portion entre guillemets. De même pour le nom et l’adresse, qui contiennent aussi des espaces.</p>
+<p>Certains caractères non-imprimables ont des <strong>codes d’échappement</strong> :</p>
+
+<table>
+<thead>
+<tr>
+<th>Code d’échappement</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>\n</td>
+<td>Nouvelle ligne</td>
+</tr>
+<tr>
+<td>\t</td>
+<td>Tabulation</td>
+</tr>
+<tr>
+<td>\r</td>
+<td>Retour chariot</td>
+</tr>
+<tr>
+<td>\a</td>
+<td>Caractère de cloche (ding !)                                (<a href="https://www.rapidtables.com/code/text/ascii-table.html">https://www.rapidtables.com/code/text/ascii-table.html</a>)</td>
+</tr>
+</tbody>
+</table><h3 id="commandes-utiles">Commandes utiles</h3>
+<p>Voici quelques commandes couramment utilisées. Utilisez <code>man</code> pour en savoir plus. Certaines pourraient être utiles pour les exercices ;-)</p>
+<h4 id="manipuler-les-répertoires">Manipuler les répertoires</h4>
+
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ls</code></td>
+<td>Affiche le contenu d’un répertoire. Souvent utilisé sous la forme <code>ls -F</code>, <code>ls -l</code> ou <code>ls -a</code>.</td>
+</tr>
+<tr>
+<td><code>mv</code></td>
+<td>Renomme ou déplace un fichier ou un répertoire.</td>
+</tr>
+<tr>
+<td><code>cp</code></td>
+<td>Copie un fichier. <code>cp -r</code> (récursif) pour copier des répertoires.</td>
+</tr>
+<tr>
+<td><code>rm</code></td>
+<td>Supprime (efface) un fichier. Exemple : <code>rm -rf olddata.tsv</code></td>
+</tr>
+<tr>
+<td><code>mkdir</code></td>
+<td>Crée un répertoire.</td>
+</tr>
+<tr>
+<td><code>ln</code></td>
+<td>Crée un lien symbolique ou dur. <code>ln -s</code> crée un lien symbolique.</td>
+</tr>
+<tr>
+<td><code>chmod</code></td>
+<td>Modifie les permissions d’un fichier ou d’un répertoire.</td>
+</tr>
+</tbody>
+</table><h4 id="lire-des-fichiers">Lire des fichiers</h4>
+
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cat</code></td>
+<td>Programme pour concaténer. Souvent employé pour voir le contenu d’un fichier dans le terminal.</td>
+</tr>
+<tr>
+<td><code>less</code></td>
+<td>Fait défiler un fichier page par page. Très utile pour les gros fichiers inaccessibles à un éditeur de texte.</td>
+</tr>
+<tr>
+<td><code>head</code></td>
+<td>Affiche les premières lignes d’un fichier. <code>head -3</code> affiche par exemple les trois premières lignes.</td>
+</tr>
+<tr>
+<td><code>tail</code></td>
+<td>Affiche la fin d’un fichier. <code>tail -f</code> permet de suivre les nouvelles lignes ajoutées en temps réel.</td>
+</tr>
+</tbody>
+</table><h4 id="analyser-et-traiter-des-fichiers">Analyser et traiter des fichiers</h4>
+
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wc</code></td>
+<td>Compte le nombre de mots, de lignes et/ou de caractères dans un ou plusieurs fichiers.</td>
+</tr>
+<tr>
+<td><code>sort</code></td>
+<td>Trie les lignes d’un fichier par ordre alphabétique ou numérique (<code>-g</code> ou <code>-n</code>), éventuellement en ordre inverse (<code>-r</code>).</td>
+</tr>
+<tr>
+<td><code>uniq</code></td>
+<td>Supprime les lignes dupliquées dans un fichier.</td>
+</tr>
+<tr>
+<td><code>cut</code></td>
+<td>Supprime des colonnes dans chaque ligne d’un fichier ou de plusieurs fichiers.</td>
+</tr>
+<tr>
+<td><code>grep</code></td>
+<td>Filtre un fichier pour n’afficher que les lignes correspondant à un motif. Peut s’inverser (<code>-v</code>) pour les lignes ne correspondant pas au motif.</td>
+</tr>
+<tr>
+<td><code>gzip</code> (<code>gunzip</code>)</td>
+<td>Compresse (ou décompresse) un fichier.</td>
+</tr>
+<tr>
+<td><code>tar</code></td>
+<td>Archive ou désarchive un répertoire entier dans un fichier unique.</td>
+</tr>
+</tbody>
+</table><h4 id="éditer-des-fichiers">Éditer des fichiers</h4>
+
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tr</code></td>
+<td>Remplace un caractère par un autre. Peut aussi supprimer des caractères.</td>
+</tr>
+<tr>
+<td><code>vi</code></td>
+<td>Lance l’éditeur de texte vi (pratique pour les experts).</td>
+</tr>
+<tr>
+<td><code>echo</code></td>
+<td>Affiche du texte à l’écran. Exemple : <code>echo 'Hello World!'</code></td>
+</tr>
+</tbody>
+</table><h4 id="se-connecter-à-d’autres-ordinateurs">Se connecter à d’autres ordinateurs</h4>
+
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ssh</code></td>
+<td>Permet de se connecter de façon sécurisée (chiffrée) à une machine distante.</td>
+</tr>
+<tr>
+<td><code>scp</code></td>
+<td>Copie (sécurisée) de fichiers vers/depuis des machines distantes.</td>
+</tr>
+</tbody>
+</table><h4 id="standard-io-et-redirection">Standard I/O et redirection</h4>
+<p>Les commandes Unix envoient leurs résultats vers la sortie standard (l’écran) et reçoivent leurs entrées depuis l’entrée standard (clavier).</p>
+<p>Chaque programme Unix démarre avec trois connexions au monde extérieur, appelées <strong>flux</strong> (streams) :</p>
+
+<table>
+<thead>
+<tr>
+<th>Nom du flux</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>standard input</td>
+<td>Correspond au clavier (ce que vous tapez).</td>
+</tr>
+<tr>
+<td>standard output</td>
+<td>Correspond à l’écran (ce que le programme affiche normalement).</td>
+</tr>
+<tr>
+<td>standard error</td>
+<td>Correspond aussi à l’écran, mais séparé pour afficher les messages d’erreur.</td>
+</tr>
+</tbody>
+</table><p>Le mot “initialement” implique qu’on peut en fait <strong>rediriger</strong> ces flux vers un fichier, un autre périphérique ou un autre programme. C’est un mécanisme très pratique.</p>
+<h4 id="exemple-simple">Exemple simple</h4>
+<p>Le programme <code>wc</code> compte les lignes, les caractères et les mots envoyés à son entrée standard. On peut l’utiliser de manière interactive :</p>
+<pre><code>
+[orkin@login1 ~] $ wc Alouette, gentille alouette,  
+Alouette, je te plumerai
+Je te plumerai la tete 
+Je te plumerai la tete 
+Alouette, alouette 
+A a a ah ^d 
+6 23 126
+
+</code></pre>
+<p>Dans cet exemple, j’ai lancé la commande <code>wc</code>. Elle attend que je tape un texte (ici quelques vers). Lorsque j’ai fini, j’appuie sur <strong>Control-D</strong> pour indiquer la fin (End-of-File). <code>wc</code> m’affiche alors le nombre de lignes (6), de mots (23) et de caractères (126) du texte.</p>
+<p>On veut souvent compter les lignes d’un gros fichier et sauvegarder le résultat ailleurs. D’abord, on envoie le résultat de <code>wc</code> vers stdout :</p>
+<pre><code>[orkin@login1 FILES] wc big_file.fasta
+82 103 5024 big_file.fasta
+</code></pre>
+<p>Puis on <strong>redirige</strong> cette sortie vers un fichier avec <code>&gt;</code> :</p>
+<pre><code>[orkin@login1 files] wc big_file.fasta &gt; count.txt
+</code></pre>
+<p>Si vous regardez le contenu de <strong>count.txt</strong> avec <code>cat</code>, vous verrez les données que vous venez d’enregistrer :</p>
+<pre><code>[orkin@login1 FILES] $ cat count.txt
+82 103 5024
+</code></pre>
+<h4 id="caractères-spéciaux-de-redirection">Caractères spéciaux de redirection</h4>
+<p>Voici la liste de base pour <strong>bash</strong> :</p>
+
+<table>
+<thead>
+<tr>
+<th>Commande de redirection</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt; myfile.txt</code></td>
+<td>Redirige le contenu du fichier vers l’entrée standard.</td>
+</tr>
+<tr>
+<td><code>&gt; myfile.txt</code></td>
+<td>Redirige la sortie standard vers un fichier.</td>
+</tr>
+<tr>
+<td><code>&gt;&gt; logfile.txt</code></td>
+<td>Ajoute la sortie standard à la fin du fichier.</td>
+</tr>
+<tr>
+<td><code>1&gt; myfile.txt</code></td>
+<td>Redirige uniquement la sortie standard vers le fichier (même chose que <code>&gt;</code>).</td>
+</tr>
+<tr>
+<td><code>2&gt; myfile.txt</code></td>
+<td>Redirige uniquement la sortie d’erreur.</td>
+</tr>
+<tr>
+<td><code>&amp;&gt; myfile.txt</code></td>
+<td>Redirige à la fois la sortie standard et la sortie d’erreur vers le fichier.</td>
+</tr>
+</tbody>
+</table><p>On peut les combiner. Par exemple :</p>
+<pre><code>[orkin@login1 FILES] $ grep root /etc/passwd &gt; search.out 2&gt; search.err
+</code></pre>
+<p>Ici, on recherche les lignes contenant “root” dans le fichier <code>/etc/passwd</code>, on envoie les résultats dans <strong>search.out</strong> et les erreurs éventuelles dans <strong>search.err</strong>.</p>
+<h4 id="filtres-noms-de-fichiers-et-entrée-standard">Filtres, noms de fichiers et entrée standard</h4>
+<p>De nombreuses commandes Unix agissent comme des <strong>filtres</strong> : elles lisent des données à partir d’un fichier ou de l’entrée standard, les transforment et écrivent le résultat sur la sortie standard. Le plus souvent, si elles reçoivent un nom de fichier en argument, elles l’utiliseront comme entrée ; sinon, elles liront l’entrée standard. Exemple, ces deux commandes sont équivalentes :</p>
+<pre><code>[orkin@login1 FILES] grep 'Colobus' big_file.fasta 
+[orkin@login FILES1] grep 'Colobus' &lt; big_file.fasta
+</code></pre>
+<p>La première recherche “Colobus” directement dans le fichier <strong>big_file.fasta</strong>, la seconde lit l’entrée standard redirigée depuis <strong>big_file.fasta</strong>.</p>
+<p>Parfois, vous souhaitez qu’un filtre agisse à la fois sur plusieurs fichiers et sur l’entrée standard. Beaucoup de commandes acceptent <code>-</code> comme synonyme de l’entrée standard :</p>
+<pre><code>[orkin@login1 FILES] grep 'Colobus' big_file.fasta bigger_file.fasta -
+</code></pre>
+<p>Ceci recherche “Colobus” dans les fichiers <strong>big_file.fasta</strong>, <strong>bigger_file.fasta</strong> et enfin dans l’entrée standard (ici le clavier, puisque non redirigée).</p>
+<h4 id="standard-io-et-pipelines">Standard I/O et pipelines</h4>
+<p>Le grand avantage du shell Unix est de pouvoir enchaîner plusieurs commandes avec des <strong>pipes</strong>. Exemple :</p>
+<pre><code>[orkin@login1 FILES] grep 'Colobus' big_file.fasta | wc -l 
+3
+</code></pre>
+<p>Ici, <code>grep</code> recherche les lignes contenant “Colobus” dans <strong>big_file.fasta</strong>, et <code>wc -l</code> compte le nombre de lignes qui lui sont passées. Le symbole <code>|</code> (pipe) relie la sortie standard de <code>grep</code> à l’entrée standard de <code>wc</code>.</p>
+<h4 id="autres-idiomes-de-pipe">Autres idiomes de pipe</h4>
+<p>Les pipes sont très puissants. Voici des exemples courants :</p>
+<p><strong>Compter le nombre de lignes où un motif n’apparaît pas</strong></p>
+<pre><code>[orkin@login1 FILES] grep -v "Colobus" big_file.fasta | wc -l 
+79
+</code></pre>
+<p><strong>Extraire les lignes uniques dans un fichier</strong></p>
+<pre><code>[orkin@login1 FILES] sort long_file.txt | uniq &gt; unique.out
+</code></pre>
+<p><strong>Concaténer plusieurs listes et supprimer les doublons</strong></p>
+<pre><code>[orkin@login1 FILES] cat file1 file2 file3 file4 | sort | uniq
+</code></pre>
+<p><strong>Compter les lignes uniques</strong></p>
+<pre><code>[orkin@login1 FILES]$ sort long_file.txt | uniq | wc -l
+</code></pre>
+<p>Pour compter le nombre d’occurrences de chaque ligne dans plusieurs fichiers :</p>
+<pre><code>[orkin@login1 FILES]$ sort file1.txt file2.txt file3.txt file4.txt |uniq -c
+</code></pre>
+<p><strong>Faire un listing de répertoire très long et le défiler</strong></p>
+<pre><code>[orkin@login1 FILES]$ less bigger_file.fasta 
+</code></pre>
+<p>Pour des lignes très longues, ajoutez <code>-S</code> :</p>
+<pre><code>[orkin@login1 FILES]$ less -S bigger_file.fasta
+</code></pre>
+<h3 id="permissions">Permissions</h3>
+<p>Souvent, plusieurs utilisateurs partagent le même ordinateur. Afin d’éviter qu’ils ne se gênent mutuellement, chaque fichier ou répertoire possède un ensemble de permissions (lire, écrire, exécuter) pour le propriétaire, le groupe et les autres. Pour les visualiser :</p>
+<pre><code>[orkin@login1 scratch]$ ls -l
+total 8
+drwxr-x---. 2 orkin orkin 4096 Jan 15 19:54 FILES
+drwxr-x---. 2 orkin orkin  6 Jan 15 16:49 MyCode
+drwxr-x---. 2 orkin orkin  6 Jan 15 19:14 New_dossier
+drwxr-x---. 3 orkin orkin 19 Jan 15 16:48 RawData
+-rw-r-----. 1 orkin orkin 33 Jan 15 16:57 count.txt
+-rw-r-----. 1 orkin orkin  0 Jan 15 15:16 data.txt
+-rw-r-----. 1 orkin orkin  0 Jan 15 15:16 readme.txt
+-rw-r-----. 1 orkin orkin  0 Jan 15 15:16 results.txt
+drwxr-x---. 2 orkin orkin 32 Jan 15 14:10 tmp
+-rw-r-----. 1 orkin orkin  0 Jan 15 15:16 transitions.txt
+</code></pre>
+<p>Le premier caractère indique le type (<code>d</code> pour un répertoire, <code>l</code> pour un lien, <code>-</code> pour un fichier). Ensuite, il y a trois groupes de trois caractères, indiquant les permissions pour l’utilisateur, le groupe et les autres (par exemple, <code>rwx</code>). Par exemple :</p>
+<pre><code>Usr Grp Autr d rwx rwx rwx
+</code></pre>
+<p>Les utilisateurs appartiennent à des groupes, et “autres” désigne tous les autres utilisateurs.</p>
+<p>La commande <code>chmod</code> (change mode) sert à modifier les permissions. Vous pouvez ajouter <code>+</code> ou retirer <code>-</code> des permissions pour l’utilisateur <code>u</code>, le groupe <code>g</code>, les autres <code>o</code> ou tout le monde <code>a</code>.</p>
+<p>Pour rendre <strong><a href="http://print.py">print.py</a></strong> exécutable comme un programme :</p>
+<pre><code>[orkin@login1 FILES] $ ls -l print.py 
+-rw-r--r-- 1 orkin staff 24 Jan 9 04:22 print.py 
+[orkin@login1 FILES] $ chmod a+x print.py
+[orkin@login1 FILES] $ ls -l print.py 
+-rwxr-xr-x 1 orkin staff 24 Jan 9 04:22 print.py
+[orkin@login1 FILES] $
+</code></pre>
+<p>Pour empêcher les autres de lire ou d’exécuter le script :</p>
+<pre><code>[orkin@login1 FILES] $ chmod o-rx print.py
+[orkin@login1 FILES] $ ls -l print.py 
+-rwxr-x--- 1 dbrown staff 23 Oct 16 13:37 print.py
+</code></pre>
+<div></div>
+<h3 id="plus-d’unix">Plus d’Unix</h3>
+<p>Voici quelques commandes plus avancées d’Unix qui peuvent s’avérer très utiles. Quand vous aurez un peu de temps, vous pourrez les explorer davantage (entre parenthèses, nous indiquons les pages du <em>Linux Phrasebook Second Edition</em> de Scott Granneman ou bien des liens vers des tutoriels en ligne) :</p>
+<ul>
+<li><code>awk</code> (Linux Phrasebook p.194-198) (<a href="https://www.tutorialspoint.com/awk/index.htm">tutoriel en ligne</a>)</li>
+<li><code>sed</code> (Linux Phrasebook p.188-194) (<a href="https://www.tutorialspoint.com/sed/index.htm">tutoriel en ligne</a>)</li>
+<li><code>perl</code> one-liners (<a href="https://catonmat.net/introduction-to-perl-one-liners">tutoriel en ligne</a>)</li>
+<li><code>for</code> loops (<a href="https://www.tutorialspoint.com/unix/for-loop.htm">tutoriel en ligne</a>)</li>
+</ul>
+<hr>
+<h3 id="lien-vers-le-problème-unix-1"><a href="https://github.com/nomascus/ANT3814/blob/main/PROBLEM_SETS/Unix1_problemSet.md">Lien vers le problème Unix 1</a></h3>
+<pre><code></code></pre>
+</div>
+</body>
+
+</html>

@@ -1,0 +1,506 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diapositives Week 4</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="boucles-bash">Boucles Bash</h1>
+<p>Pour accéder à la leçon d’aujourd’hui, téléchargez le fichier html appelé 4_Unix4_2026.html depuis StudiUM. Il devrait s’ouvrir avec votre navigateur web.</p>
+<p>Commençons par créer un nouveau dossier dans votre cluster pour la leçon de cette semaine. Après vous être connecté, nous commencerons par votre dossier personnel. Descendez ensuite d’un répertoire jusqu’au dossier scratch. Créez ensuite un nouveau dossier appelé 4_Unix4, et déplacez-vous dans ce dossier.</p>
+<pre><code>cd ~/scratch
+mkdir 4_Unix4 
+cd 4_Unix4
+</code></pre>
+<p>Jusqu’à présent, tout le code que nous avons utilisé a fonctionné ligne par ligne. Vous tapez quelque chose dans le terminal et cela fonctionne sur un seul fichier ou effectue une seule opération. Une des choses les plus puissantes à propos d’un langage de programmation comme bash est qu’il vous permet d’écrire des commandes qui agissent sur plusieurs fichiers l’un après l’autre sans entrée supplémentaire. Ce type de commande est appelé une <strong>boucle</strong>. Il existe quelques types de boucles différentes qui peuvent être écrites en bash, mais nous allons nous concentrer sur deux d’entre elles, la boucle <strong>for</strong> et la boucle <strong>while</strong>.</p>
+<h2 id="boucles-for">Boucles for</h2>
+<p>Disons que nous avions une liste de noms : Charlotte, Joe, Jimmy, Rose, Sarah et que nous voulions les afficher à l’écran avec le mot “Bonjour” devant chaque nom sur une ligne séparée. Nous pourrions le faire en tapant les commandes suivantes une par une comme suit :</p>
+<pre><code>orkin@ANT3475:~$ echo "Bonjour Charlotte"
+Bonjour Charlotte
+orkin@ANT3475:~$ echo "Bonjour Joe"
+Bonjour Joe
+orkin@ANT3475:~$ echo "Bonjour Jimmy"
+Bonjour Jimmy
+orkin@ANT3475:~$ echo "Bonjour Rose"
+Bonjour Rose
+orkin@ANT3475:~$ echo "Bonjour Sarah"
+Bonjour Sarah
+</code></pre>
+<p>C’est assez lent et inefficace cependant. Nous pourrions améliorer les choses un peu en ajoutant des points-virgules et des caractères de nouvelle ligne entre chaque ligne. Un point-virgule indique à bash que la commande est terminée. Cela vous permet d’écrire plusieurs commandes sur une seule ligne à exécuter par bash l’une après l’autre (commandes sérielles). Par exemple :</p>
+<pre><code>orkin@ANT3475:~$ echo "Bonjour Charlotte"; echo "Bonjour Joe"; echo "Bonjour Jimmy"; echo "Bonjour Rose"; echo "Bonjour Sarah";
+Bonjour Charlotte
+Bonjour Joe
+Bonjour Jimmy
+Bonjour Rose
+Bonjour Sarah
+</code></pre>
+<p>C’est mieux, mais nous écrivons toujours cinq commandes séparées avec beaucoup de texte répété. Ne serait-il pas génial de simplifier cela pour dire à bash d’imprimer “Bonjour” devant une liste de noms ? C’est là que nous pouvons utiliser une boucle for, qui a la structure suivante :</p>
+<p><strong>for une nouvelleVariable dans une liste ; do une commande à la $newVariable ; done</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>type de boucle</td>
+<td>for</td>
+</tr>
+<tr>
+<td>variable</td>
+<td>prenom</td>
+</tr>
+<tr>
+<td>emplacement</td>
+<td>in</td>
+</tr>
+<tr>
+<td>liste</td>
+<td>Charlotte Joe Jimmy Rose Sarah</td>
+</tr>
+<tr>
+<td>début</td>
+<td>do;</td>
+</tr>
+<tr>
+<td>commande</td>
+<td>echo $prenom;</td>
+</tr>
+<tr>
+<td>fin</td>
+<td>done;</td>
+</tr>
+</tbody>
+</table><pre><code>orkin@ANT3475:~$ for prenom in Charlotte Joe Jimmy Rose Sarah; do echo "Bonjour $prenom"; done
+Bonjour Charlotte
+Bonjour Joe
+Bonjour Jimmy
+Bonjour Rose
+Bonjour Sarah
+</code></pre>
+<p>Notez ici l’importance des points-virgules, qui servent à séparer les trois parties de la boucle</p>
+<p><code>for prenom in Charlotte Joe Jimmy Rose Sarah;</code><br>
+<code>do "echo $prenom";</code><br>
+<code>done</code></p>
+<p>Faisons quelque chose de un peu plus complexe. Supposons que nous ayons un dossier avec 50 fichiers dedans que nous devons renommer. Exécutez le script shell <a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/FILES/makeFiles.sh">makeFiles.sh</a> pour créer 50 fichiers vides dans un répertoire appelé “FILES”, puis répertoriez le contenu du dossier</p>
+<pre><code>orkin@ANT3475:~$ bash makeFiles.sh
+orkin@ANT3475:~$ ls FILES/
+file1.txt  file14.txt file19.txt file23.txt file28.txt file32.txt file37.txt file41.txt file46.txt file50.txt
+file10.txt file15.txt file2.txt  file24.txt file29.txt file33.txt file38.txt file42.txt file47.txt file6.txt
+file11.txt file16.txt file20.txt file25.txt file3.txt  file34.txt file39.txt file43.txt file48.txt file7.txt
+file12.txt file17.txt file21.txt file26.txt file30.txt file35.txt file4.txt  file44.txt file49.txt file8.txt
+file13.txt file18.txt file22.txt file27.txt file31.txt file36.txt file40.txt file45.txt file5.txt  file9.txt
+</code></pre>
+<p>Remarquez que les fichiers 1-9 ne sont pas listés en premier. C’est parce que bash, comme de nombreux systèmes d’exploitation, classe les caractères selon l’ordre ascii :</p>
+<p><code>blanc ! " # $ % &amp; ' ( ) * + , - . /0 1 2 3 4 5 6 7 8 9 : ; &lt; = &gt; ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z[ \\] ˆ_ a b c d e f g h i j k l m n o p q r s t u v w x y z { } ~\</code></p>
+<p>Dans ce système de classement, le caractère point vient avant les chiffres, donc le fichier1.txt est classé avant le fichier10.txt et le fichier4.txt ne vient qu’après le fichier39.txt.</p>
+<p>Rendons les noms de fichiers plus faciles à classer en ajoutant un zéro aux noms des 9 premiers fichiers. Nous pouvons le faire avec une boucle for qui liste les nombres de 1 à 9 :</p>
+<pre><code>for number in 1 2 3 4 5 6 7 8 9; do mv file${number}.txt file0${number}.txt ; done
+</code></pre>
+<p>Attention, cependant ! Créer une boucle qui renomme vos fichiers est dangereux, car vous pouvez accidentellement mélanger tous vos fichiers ou les effacer en cas d’erreur dans votre code. <strong>Testez toujours votre boucle en ajoutant echo</strong> à la commande d’abord pour voir si le code est correct.</p>
+<pre><code>orkin@ANT3475:~/FILES$ for number in 1 2 3 4 5 6 7 8 9; do echo "mv file${number}.txt file0${number}.txt" ; done
+mv file1.txt file01.txt
+mv file2.txt file02.txt
+mv file3.txt file03.txt
+mv file4.txt file04.txt
+mv file5.txt file05.txt
+mv file6.txt file06.txt
+mv file7.txt file07.txt
+mv file8.txt file08.txt
+mv file9.txt file09.txt
+</code></pre>
+<p>Ici, nous utilisons la boucle pour imprimer d’abord les commandes à l’écran. Une fois que tout semble bon, vous pouvez supprimer la commande echo et exécuter le code pour renommer les fichiers.</p>
+<pre><code>orkin@ANT3475:~/FILES$ ls 
+file01.txt file06.txt file11.txt file16.txt file21.txt file26.txt file31.txt file36.txt file41.txt file46.txt
+file02.txt file07.txt file12.txt file17.txt file22.txt file27.txt file32.txt file37.txt file42.txt file47.txt
+file03.txt file08.txt file13.txt file18.txt file23.txt file28.txt file33.txt file38.txt file43.txt file48.txt
+file04.txt file09.txt file14.txt file19.txt file24.txt file29.txt file34.txt file39.txt file44.txt file49.txt
+file05.txt file10.txt file15.txt file20.txt file25.txt file30.txt file35.txt file40.txt file45.txt file50.txt
+</code></pre>
+<p>Si vous avez beaucoup de nombres dans votre boucle for, vous n’avez pas besoin de les écrire tous. Vous pouvez utiliser {1…9} à la place de 1 2 3 4 5 6 7 8 9. Les deux nombres à l’intérieur des accolades séparés par deux points indiquent une plage de nombres pour la boucle</p>
+<pre><code>for number in {1..9}; do echo "mv file${number}.txt file0${number}.txt" ; done
+</code></pre>
+<h2 id="boucles-while">Boucles while</h2>
+<p>Un des types de boucles les plus puissants est la boucle while, car elle vous permet de dire à bash de faire quelque chose tant qu’une condition est vraie. Le plus souvent, cela est utilisé pour lire un fichier et exécuter une commande en fonction des informations contenues dans chaque ligne.</p>
+<pre><code>while condition est vraie; do 
+    code à exécuter; 
+done
+</code></pre>
+<p>Nous pouvons le faire à la ligne de commande en une seule ligne de texte. Disons que nous voulons lire un fichier et imprimer les lignes avec des informations devant chaque ligne</p>
+<pre><code>orkin@ANT3475:~/FILES$ lineNumber=1; while read line; do echo "Line $counter $line"; ((lineNumber++)) ; done &lt; apol.fasta
+Line 1 &gt;seq1
+Line 2 GAATTCAAGTTCTTGTGCGCACACAAATCCAATAAAAACTATTGTGCACACAGACGCGAC
+Line 3 TTCGCGGTCTCGCTTGTTCTTGTTGTATTCGTATTTTCATTTCTCGTTCTGTTTCTACTT
+Line 4 AACAATGTGGTGATAATATAAAAAATAAAGCAATTCAAAAGTGTATGACTTAATTAATGA
+Line 5 GCGATTTTTTTTTTGAAATCAAATTTTTGGAACATTTTTTTTAAATTCAAATTTTGGCGA
+Line 6 AAATTCAATATCGGTTCTACTATCCATAATATAATTCATCAGGAATACATCTTCAAAGGC
+Line 7 AAACGGTGACAACAAAATTCAGGCAATTCAGGCAAATACCGAATGACCAGCTTGGTTATC
+Line 8 AATTCTAGAATTTGTTTTTTGGTTTTTATTTATCATTGTAAATAAGACAAACATTTGTTC
+Line 9 CTAGTAAAGAATGTAACACCAGAAGTCACGTAAAATGGTGTCCCCATTGTTTAAACGGTT
+Line 10 GTTGGGACCAATGGAGTTCGTGGTAACAGTACATCTTTCCCCTTGAATTTGCCATTCAAA
+Line 11 ATTTGCGGTGGAATACCTAACAAATCCAGTGAATTTAAGAATTGCGATGGGTAATTGACA
+Line 12 TGAATTCCAAGGTCAAATGCTAAGAGATAGTTTAATTTATGTTTGAGACAATCAATTCCC
+Line 13 CAATTTTTCTAAGACTTCAATCAATCTCTTAGAATCCGCCTCTGGAGGTGCACTCAGCCG
+Line 14 CACGTCGGGCTCACCAAATATGTTGGGGTTGTCGGTGAACTCGAATAGAAATTATTGTCG
+Line 15 CCTCCATCTTCATGGCCGTGAAATCGGCTCGCTGACGGGCTTCTCGCGCTGGATTTTTTC
+Line 16 ACTATTTTTGAATACATCATTAACGCAATATATATATATATATATTTAT
+</code></pre>
+<p>Ici, nous donnons à une variable appelée <code>lineNumber</code> une valeur de 1. Ensuite, nous commençons la boucle while, disant à bash de lire les lignes dans un fichier. Nous lui dirons où se trouve le fichier plus tard, mais il est important de savoir que <strong>while</strong> et <strong>read</strong> sont des commandes interprétées par bash, <strong>line</strong> est juste un nom de variable que nous choisissons pour représenter chaque ligne de métadonnées alors qu’elle passe à travers la boucle que nous écrivons. Nous pourrions utiliser n’importe quel nom que nous voulons, mais <code>line</code> a du sens. Ensuite, nous utilisons <code>echo</code> parce que nous voulons imprimer à l’écran le mot ‘Ligne’ suivi de la valeur du compteur et ensuite la ligne du fichier. ((lineNumber++)) est un astuce pour ajouter 1 à la variable lineNumber à chaque fois que la boucle s’exécute. Enfin, nous fermons la boucle avec <code>done</code> et lui donnons le fichier à lire (apol.fasta). N’oubliez pas que le signe inférieur à <code>&lt;</code> indique que nous envoyons des informations du fichier (que nous avons enregistré comme une variable à la ligne 2) à droite dans le programme à gauche</p>
+<p>Essayons un exemple plus difficile, mais plus réaliste. Disons que nous avons des lectures de séquençage de cinq échantillons que nous voulons mapper sur différents génomes de référence en utilisant le programme <strong>bwa</strong>. Nous avons la feuille de données de métadonnées suivante avec une liste</p>
+<p>d’informations sur chaque échantillon dans le format suivant:</p>
+
+<table>
+<thead>
+<tr>
+<th>Espèce</th>
+<th>Individu</th>
+<th>Génome de référence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lemur_catta</td>
+<td>LC_01</td>
+<td>mLemcat1.fa</td>
+</tr>
+<tr>
+<td>Lemur_catta</td>
+<td>LC_12</td>
+<td>mLemcat1.fa</td>
+</tr>
+<tr>
+<td>Pan_paniscus</td>
+<td>PP_09</td>
+<td>Ptro3.fa</td>
+</tr>
+<tr>
+<td>Homo_sapiens</td>
+<td>HS_01</td>
+<td>hg38.fa</td>
+</tr>
+<tr>
+<td>Homo_sapiens</td>
+<td>HS_22</td>
+<td>hg38.fa</td>
+</tr>
+</tbody>
+</table><p>Si nous voulons exécuter bwa, nous devons lui indiquer les informations suivantes</p>
+<pre><code>bwa mem forward_sequencing_reads.fasta reverse_sequencing_reads.fasta reference_genome.fa -o outputFileName.sam
+</code></pre>
+<p>Pour la première ligne de notre table de métadonnées, cela ressemblerait à ceci:</p>
+<p><code>bwa mem Lemur_catta_LC_01_F.fasta Lemur_catta_LC_01_R.fasta mLemcat1.fa -o Lemur_catta_LC_01.sam</code></p>
+<p>Mais ce serait pénible d’écrire toutes ces lignes de texte, surtout si vous travaillez avec des centaines d’échantillons. Nous pouvons écrire un <strong>script</strong> en utilisant une boucle while pour générer le code pour un nombre infini de tâches bwa!</p>
+<pre><code>#!/bin/bash
+
+filename='bwa_metadata.txt'
+
+while read line; do
+
+   ID=$(echo $line | awk '{print $1_$2}')
+   ref=$(echo $line | awk '{print $3}')
+
+   echo "bwa mem ${ID}_F.fasta ${ID}_R.fasta $ref -o ${ID}.sam"
+
+done &lt; $filename
+</code></pre>
+<p>Ce script est un fichier texte que nous sauvegardons sous le nom de bwa_runBatch.sh. Il contient la boucle while complète et quelques instructions supplémentaires pour indiquer à bash comment l’exécuter. C’est un peu compliqué, alors décomposons-le ligne par ligne.</p>
+<p><strong>Ligne 1</strong></p>
+<blockquote>
+<p>#!/bin/bash</p>
+</blockquote>
+<p>Cette ligne spéciale en haut du script indique à bash dans quel langage le script est écrit. Cette ligne sera un peu différente pour d’autres langages comme python ou perl.</p>
+<p><strong>Ligne 2</strong></p>
+<blockquote>
+<p>filename=‘bwa_metadata.txt’</p>
+</blockquote>
+<p>Nous sauvegardons le nom du fichier de métadonnées que nous voulons utiliser dans une variable appelée $filename.</p>
+<p><strong>Ligne 3</strong></p>
+<blockquote>
+<p>while read line; do</p>
+</blockquote>
+<p>Cette ligne commence la boucle while, indiquant à bash de lire les lignes dans un fichier. Nous lui dirons où se trouve le fichier plus tard. Il est important de savoir que <strong>while</strong> et <strong>read</strong> sont des commandes interprétées par bash, <strong>line</strong> est juste un nom de variable que nous choisissons pour représenter chaque ligne de métadonnées lorsqu’elle passe à travers le programme que nous écrivons. Nous pourrions utiliser n’importe quel nom, mais “line” a du sens.</p>
+<p><strong>Ligne 4</strong></p>
+<blockquote>
+<p>ID=$(echo $line | awk ‘{print $1"_"$2}’)</p>
+</blockquote>
+<p>Maintenant que la première ligne de métadonnées a été lue par bash, nous pouvons commencer à faire des choses avec. Ici, nous utilisons awk pour séparer les deux premières colonnes (Lemur_catta et LC_01) et les fusionner en une seule chaîne séparée par un trait de soulignement (Lemur_catta_LC_01). Ensuite, nous le sauvegardons dans une variable appelée <code>ID</code> pour le stocker et l’utiliser plus tard dans le script.</p>
+<p><strong>Ligne 5</strong></p>
+<blockquote>
+<p>ref=$(echo $line | awk ‘{print $3}’)</p>
+</blockquote>
+<p>Comme dans la ligne 4, nous sauvegardons une autre partie de la ligne de métadonnées. Cette fois, il s’agit de la colonne 3 (mLemcat1.fa), qui est le nom du génome de référence. Nous le sauvegardons dans une variable appelée <code>ref</code> pour l’utiliser plus tard dans le script. Maintenant que la première ligne de métadonnées a été analysée et stockée dans des variables, nous pouvons utiliser les variables pour exécuter bwa.</p>
+<p><strong>Ligne 6</strong></p>
+<blockquote>
+<p>echo “bwa mem ${ID}_F.fasta ${ID}_R.fasta $ref -o ${ID}.sam”</p>
+</blockquote>
+<p>Tout d’abord, nous exécutons une commande <code>echo</code>, car nous voulons afficher les résultats de tout ce qui se trouve entre guillemets à l’écran. Nous commençons par appeler le programme bwa mem, puis nous lui fournissons quatre informations : les fichiers de lecture de séquençage avant et arrière, le génome de référence et le nom du fichier de sortie. Nous insérons les variables que nous avons créées avec awk ($ID et $ref) dans la chaîne de texte.</p>
+<p>${ID}_F.fasta -&gt; Lemur_catta_LC_01_F.fasta<br>
+${ID}_R.fasta -&gt; Lemur_catta_LC_01_R.fasta<br>
+$ref -&gt; mLemcat1.fa<br>
+${ID}.sam -&gt; Lemur_catta_LC_01.sam</p>
+<p><strong>Ligne 7</strong></p>
+<blockquote>
+<p>done &lt; $filename</p>
+</blockquote>
+<p>Enfin, nous clôturons la boucle avec <code>done</code>. C’est également à ce moment que nous donnons au fichier de métadonnées comme entrée à la boucle. Rappelez-vous que le signe inférieur <code>&lt;</code> indique que nous envoyons des informations du fichier (que nous avons sauvegardé sous forme de variable à la ligne 2) sur la droite dans le programme sur la gauche.</p>
+<p>Alors exécutons notre script!</p>
+<pre><code>orkin@ANT3475:~/FILES$ bash bwa_batchRun.sh
+bwa mem Lemur_catta_LC_01_F.fasta Lemur_catta_LC_01_R.fasta mLemcat1.fa -o Lemur_catta_LC_01.sam
+bwa mem Lemur_catta_LC_12_F.fasta Lemur_catta_LC_12_R.fasta mLemcat1.fa -o Lemur_catta_LC_12.sam
+bwa mem Pan_paniscus_PP_09_F.fasta Pan_paniscus_PP_09_R.fasta Ptro3.fa -o Pan_paniscus_PP_09.sam
+bwa mem Homo_sapiensHS_01_F.fasta Homo_sapiens_HS_01_R.fasta hg38.fa -o Homo_sapiens_HS_01.sam
+bwa mem Homo_sapiens_HS_22_F.fasta Homo_sapiens_HS_22_R.fasta hg38.fa -o Homo_sapiens_HS_22.sam
+</code></pre>
+<p>Regardez ça!</p>
+<h1 id="éditeurs-de-texte">Éditeurs de texte</h1>
+<p>[L’introduction suivante à VI est tirée de CSHL Programming For Biology et a été initialement rédigée par Sofia Robb]</p>
+<p>Il est souvent nécessaire de créer et d’écrire dans un fichier tout en utilisant le terminal. Cela rend essentiel l’utilisation d’un éditeur de texte de terminal. Il existe de nombreux éditeurs de texte. Certains de nos préférés sont Emacs et vim. Nous allons vous initier à un éditeur de texte simple appelé <code>vi</code>.</p>
+<h2 id="introduction-à-vi">Introduction à vi</h2>
+<p>Qu’est-ce que <strong>vi</strong> ?</p>
+<blockquote>
+<p><strong>vi</strong> est un éditeur de texte en ligne de commande. vi est inclus dans chaque installation Linux. Vous n’avez jamais besoin de l’installer.</p>
+</blockquote>
+<p>Qu’est-ce qu’un éditeur de texte en ligne de commande ?</p>
+<blockquote>
+<p>Un éditeur de texte en ligne de commande est un éditeur de texte que vous utilisez à partir de la ligne de commande. Dans la plupart des éditeurs de texte en ligne de commande, ne vous attendez pas à pouvoir cliquer pour naviguer. Vous devrez vous déplacer avec des frappes de touches du clavier. Les deux éditeurs de texte les plus populaires sont <strong>vi</strong> et <strong>emacs</strong>. Vous pouvez utiliser l’un ou l’autre, mais nous commencerons par <strong>vi</strong> car les frappes de touches sont moins complexes que dans <strong>emacs</strong>.</p>
+</blockquote>
+<p>Pourquoi devrais-je me soucier des éditeurs de texte en ligne de commande ?</p>
+<blockquote>
+<p>Si vous êtes connecté à une machine distante, un éditeur de texte en ligne de commande est le moyen le plus rapide, le plus facile et le plus efficace d’écrire des fichiers texte.</p>
+</blockquote>
+<h3 id="pour-commencer-avec-vi">Pour commencer avec vi</h3>
+<p><strong>Ouvrir un fichier</strong></p>
+<p>Sur la ligne de commande, tapez <code>vi</code> suivi d’un nom de fichier.</p>
+<pre class=" language-bash"><code class="prism  language-bash">orkin@ANT3475:~$ <span class="token function">vi</span> <span class="token operator">&lt;</span>fichier<span class="token operator">&gt;</span>
+</code></pre>
+<p>Essayons :</p>
+<pre class=" language-bash"><code class="prism  language-bash">orkin@ANT3475:~$ <span class="token function">vi</span> premier_fichier_vi.txt
+</code></pre>
+<p>Vous verrez ceci dans votre terminal.</p>
+<pre><code>~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+~
+"premier_fichier_vi.txt" [New File]
+</code></pre>
+<p>Remarquez le nom du fichier en bas.</p>
+<p>Si vous <strong>n’incluez pas</strong> de nom de fichier, vous verrez quelque chose de similaire à ceci :</p>
+<pre class=" language-bash"><code class="prism  language-bash">~
+~
+~
+~
+~                                                VIM - Vi IMproved
+~
+~                                                version 8.0.1283
+~                                            by Bram Moolenaar et al.
+~                                   Vim is <span class="token function">open</span> <span class="token function">source</span> and freely distributable
+~
+~                                          Become a registered Vim user<span class="token operator">!</span>
+~                                 <span class="token function">type</span>  :help register<span class="token operator">&lt;</span>Enter<span class="token operator">&gt;</span>   <span class="token keyword">for</span> information
+~
+~                                 <span class="token function">type</span>  :q<span class="token operator">&lt;</span>Enter<span class="token operator">&gt;</span>               to <span class="token keyword">exit</span>
+~                                 <span class="token function">type</span>  :help<span class="token operator">&lt;</span>Enter<span class="token operator">&gt;</span>  or  <span class="token operator">&lt;</span>F1<span class="token operator">&gt;</span>  <span class="token keyword">for</span> on-line <span class="token function">help</span>
+~                                 <span class="token function">type</span>  :help version8<span class="token operator">&lt;</span>Enter<span class="token operator">&gt;</span>   <span class="token keyword">for</span> version info
+~
+~
+~
+
+</code></pre>
+<p>Lisez le message et tapez <code>:q&lt;Enter&gt;</code> pour <strong>q</strong>uitter ou sortir.</p>
+<p><strong>vi a deux modes.</strong></p>
+<ol>
+<li>
+<p><strong>Mode Insertion</strong></p>
+</li>
+<li>
+<p><strong>Mode Commande</strong></p>
+</li>
+</ol>
+<p><strong>Mode Insertion</strong> est pour taper le contenu de votre fichier. Toutes les frappes de touches seront interprétées comme des caractères que vous souhaitez voir dans votre fichier.</p>
+<p><strong>Mode Commande</strong> est pour utiliser des commandes. Toutes les frappes de touches seront interprétées comme des commandes et <em><strong>non</strong></em> comme faisant partie de votre fichier. Les commandes courantes sont pour supprimer, copier, rechercher, remplacer et enregistrer.</p>
+<h3 id="créer-écrire-et-enregistrer-un-fichier">Créer, Écrire et Enregistrer un Fichier</h3>
+<p><strong>Créer</strong></p>
+<p>À partir de la ligne de commande, ouvrez un nouveau fichier en tapant</p>
+<p><code>vi premier_fichier_vi.txt</code></p>
+<p><strong>Écrire</strong></p>
+<p>Commencez à taper du contenu. Pour cela, nous devons entrer dans le <strong>Mode Insertion</strong>.</p>
+<p>Pour cela, tapez <code>i</code>.</p>
+<p>Votre session vi ressemblera maintenant à ceci :</p>
+<pre class=" language-bash"><code class="prism  language-bash">~
+~
+~
+~
+~
+~
+-- INSERT <span class="token punctuation">(</span>paste<span class="token punctuation">)</span> --
+</code></pre>
+<p>Remarquez l’<code>INSERT</code> en bas de l’écran.</p>
+<p>Commencez à taper le contenu de votre fichier. N’oubliez pas que toutes les frappes de touches sont celles que vous voulez voir dans votre fichier et que votre souris ne fonctionnera pas.</p>
+<p><strong>Enregistrer</strong></p>
+<p>Maintenant que le fichier contient du contenu, passons en <strong>Mode Commande</strong> pour enregistrer notre fichier.</p>
+<ol>
+<li>Appuyez sur la touche <code>&lt;ESC&gt;</code> pour entrer dans le <strong>Mode Commande</strong>.</li>
+<li>tapez <code>:w</code> (deux points suivis d’un w) pour <strong>Enregistrer (Write)</strong></li>
+</ol>
+<p>Si vous voulez taper encore du contenu, entrez en <strong>Mode Insertion</strong> (<code>i</code>).</p>
+<p>Si, au lieu de cela, vous voulez quitter, puisque vous êtes déjà en <strong>Mode Commande</strong>, vous pouvez utiliser les touches de sortie <code>:q</code></p>
+<h3 id="activités-courantes-et-commandes-vi">Activités courantes et commandes vi</h3>
+<p>Passez en <strong>Mode Commande</strong> pour toutes les commandes. Si vous n’êtes pas sûr d’être en <strong>Mode Commande</strong>, appuyez simplement sur la touche <code>&lt;esc&gt;</code>. Cela n’affectera pas si vous êtes déjà en <strong>Mode Commande</strong></p>
+<p><strong>Enregistrer et Quitter</strong></p>
+<p>N’oubliez pas de passer en <strong>Mode Commande</strong> avec la touche <code>&lt;esc&gt;</code></p>
+
+<table>
+<thead>
+<tr>
+<th>frappe de touche</th>
+<th>signification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:wq</code></td>
+<td>Enregistrer (<strong>w</strong>rite) et <strong>q</strong>uitter</td>
+</tr>
+<tr>
+<td><code>:q!</code></td>
+<td><strong>q</strong>uitter sans Enregistrer !!!</td>
+</tr>
+<tr>
+<td><code>:w</code></td>
+<td>Enregistrer (<strong>w</strong>rite) uniquement</td>
+</tr>
+</tbody>
+</table><p>La plupart des commandes dans vi sont exécutées dès que vous appuyez sur une séquence de touches. Toute commande commençant par deux points ( : ) nécessite que vous appuyiez sur <code>&lt;enter&gt;</code> pour compléter la commande.</p>
+<p><strong>Se déplacer</strong></p>
+<p>N’oubliez pas de passer en <strong>Mode Commande</strong> avec la touche <code>&lt;esc&gt;</code></p>
+
+<table>
+<thead>
+<tr>
+<th>frappe de touche</th>
+<th>signification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Touches fléchées</td>
+<td>déplacer le curseur</td>
+</tr>
+<tr>
+<td><code>j</code>, <code>k</code>, <code>h</code>, <code>l</code></td>
+<td>déplacer le curseur vers le bas, vers le haut, vers la gauche et vers la droite (similaire aux touches fléchées)</td>
+</tr>
+<tr>
+<td><code>0</code> (zéro)</td>
+<td>déplacer le curseur au début de la ligne actuelle</td>
+</tr>
+</tbody>
+</table><p>|<code>^</code> (accent circonflexe) | déplacer le curseur au début de la ligne actuelle |<br>
+|<code>$</code>  |  déplacer le curseur à la fin de la ligne actuelle |<br>
+|<code>:n</code> | aller à la n-ième ligne du fichier |<br>
+|<code>nG</code> | aller à la n-ième ligne (par exemple 5G pour aller à la 5e ligne) |<br>
+|<code>G</code> | aller à la dernière ligne |<br>
+|<code>w</code> | aller au début du mot suivant |<br>
+|<code>nw</code>| avancer de n mots (par exemple, 2w pour avancer de deux mots) |<br>
+|<code>b</code> | aller au début du mot précédent |<br>
+|<code>nb</code> | reculer de n mots |</p>
+<p><strong>Supprimer du contenu</strong></p>
+<p>N’oubliez pas de passer en <strong>Mode Commande</strong> avec la touche <code>&lt;esc&gt;</code></p>
+
+<table>
+<thead>
+<tr>
+<th>frappe de touche</th>
+<th>signification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x</code></td>
+<td>supprimer un seul caractère</td>
+</tr>
+<tr>
+<td><code>nx</code></td>
+<td>supprimer n caractères (par exemple, 5x pour supprimer cinq caractères)</td>
+</tr>
+<tr>
+<td><code>dd</code></td>
+<td>supprimer la ligne actuelle</td>
+</tr>
+<tr>
+<td><code>dn</code></td>
+<td>d suivi d’une commande de déplacement. Supprimez jusqu’à où la commande de déplacement vous aurait mené. (par exemple, d5w signifie supprimer 5 mots)</td>
+</tr>
+</tbody>
+</table><p><strong>Annuler</strong></p>
+<p>N’oubliez pas de passer en <strong>Mode Commande</strong> avec la touche <code>&lt;esc&gt;</code></p>
+
+<table>
+<thead>
+<tr>
+<th>frappe de touche</th>
+<th>signification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>u</code></td>
+<td>Annuler la dernière action (vous pouvez continuer à appuyer sur u pour continuer à annuler)</td>
+</tr>
+<tr>
+<td><code>U</code></td>
+<td>(Remarque: majuscule)** - Annuler toutes les modifications de la ligne actuelle</td>
+</tr>
+</tbody>
+</table><h3 id="autres-astuces-utiles">Autres astuces utiles</h3>
+
+<table>
+<thead>
+<tr>
+<th>frappe de touche</th>
+<th>signification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:set number</code></td>
+<td>afficher les numéros de ligne</td>
+</tr>
+<tr>
+<td><code>:set nonumber</code></td>
+<td>désactiver les numéros de ligne</td>
+</tr>
+<tr>
+<td><code>:/[texte de recherche]</code></td>
+<td>rechercher [ce texte] dans votre fichier</td>
+</tr>
+<tr>
+<td><code>n</code></td>
+<td>aller à l’occurrence suivante de votre recherche</td>
+</tr>
+</tbody>
+</table><p><a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/PROBLEM_SETS/Unix4_problemSet_Francais.md">Unix4 ProblemSet</a></p>
+</div>
+</body>
+
+</html>

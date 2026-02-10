@@ -1,0 +1,332 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Devoir 1</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="révision-rapide-des-bases-unix-et-ensemble-de-problèmes">Révision rapide des bases Unix et ensemble de problèmes</h1>
+<h1 id="commandes-utiles">commandes utiles</h1>
+
+<table>
+<thead>
+<tr>
+<th>commande</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ls</code></td>
+<td>affiche le contenu du répertoire</td>
+</tr>
+<tr>
+<td><code>cd</code></td>
+<td>changer de répertoire</td>
+</tr>
+<tr>
+<td><code>mkdir</code></td>
+<td>créer un répertoire</td>
+</tr>
+<tr>
+<td><code>rm</code></td>
+<td>supprimer des fichiers et répertoires. Faites attention, il est facile de supprimer plus que ce que vous voulez.</td>
+</tr>
+<tr>
+<td><code>head</code></td>
+<td>affiche les premières lignes dans la fenêtre du terminal</td>
+</tr>
+<tr>
+<td><code>tail</code></td>
+<td>affiche les dernières lignes dans la fenêtre du terminal</td>
+</tr>
+<tr>
+<td><code>sort</code></td>
+<td>trie les lignes</td>
+</tr>
+<tr>
+<td><code>uniq</code></td>
+<td>affiche les lignes uniques</td>
+</tr>
+<tr>
+<td><code>grep</code></td>
+<td>trouve les lignes contenant un motif</td>
+</tr>
+<tr>
+<td><code>wc</code></td>
+<td>compte le nombre de lignes, de caractères et de mots</td>
+</tr>
+<tr>
+<td><code>mv</code></td>
+<td>déplace des fichiers</td>
+</tr>
+<tr>
+<td><code>cp</code></td>
+<td>copie des fichiers</td>
+</tr>
+<tr>
+<td><code>date</code></td>
+<td>renvoie la date et l’heure actuelles</td>
+</tr>
+<tr>
+<td><code>pwd</code></td>
+<td>renvoie le nom du répertoire de travail</td>
+</tr>
+<tr>
+<td><code>ssh</code></td>
+<td>connexion à distance</td>
+</tr>
+<tr>
+<td><code>scp</code></td>
+<td>copie sécurisée à distance</td>
+</tr>
+<tr>
+<td><code>~</code></td>
+<td>raccourci pour votre répertoire personnel</td>
+</tr>
+<tr>
+<td><code>man &lt;commande&gt;</code></td>
+<td>page de manuel pour la commande, par exemple <code>man ls</code> pour obtenir la page de manuel pour <code>ls</code></td>
+</tr>
+</tbody>
+</table><h3 id="essayez-ces-exemples">Essayez ces exemples</h3>
+<p>Allons dans un répertoire contenant de nombreux fichiers et listons ces fichiers</p>
+<pre class=" language-bash"><code class="prism  language-bash"><span class="token function">cd</span> /bin/
+<span class="token function">ls</span>
+</code></pre>
+<p><strong>Quelle est la différence entre ces deux commandes?</strong></p>
+<p>Essayez-les toutes les deux!!</p>
+<pre><code>ls -l
+ls -lt
+</code></pre>
+<p><strong>Pipes</strong></p>
+<p>Vous pouvez chaîner plusieurs commandes avec un pipe <code>|</code>, de sorte que la sortie standard de la première commande soit ‘piped’ dans l’entrée standard de la deuxième commande.</p>
+<p>Essayez!!</p>
+<pre><code>ls -lt | head
+</code></pre>
+<p><strong>Points-virgules</strong></p>
+<p>Vous pouvez chaîner plusieurs commandes en mettant un point-virgule <code>;</code> après chaque commande. Ici, les commandes seront exécutées séquentiellement, mais toute sortie ne sera pas transmise d’une commande à l’autre.</p>
+<p>Essayez!!</p>
+<pre><code>date ; sleep 2 ; date
+</code></pre>
+<blockquote>
+<p>Si vous voulez en savoir plus sur <code>sleep</code>, tapez <code>man sleep</code></p>
+</blockquote>
+<p><strong>Télécharger un fichier</strong>.</p>
+<p>Changez de répertoire vers votre répertoire personnel. Vous avez probablement les autorisations pour écrire dans votre répertoire personnel. Maintenant, utilisez <code>wget</code> ou <code>curl</code> pour télécharger des fichiers. Sur certains systèmes, seul l’un de ces deux peut être disponible</p>
+<pre><code>cd ~
+
+curl -O https://raw.githubusercontent.com/nomascus/ANT3814/main/PROBLEM_SETS/cuffdiff.txt
+</code></pre>
+<p>Notez que ‘-O’ est la lettre O, pas le chiffre zéro 0</p>
+<p><strong>Rediriger STDOUT</strong><br>
+Vous pouvez rediriger la sortie d’une commande dans un fichier.</p>
+<pre><code>cd ~
+grep Chr7 cuffdiff.txt &gt; fav_chr_cuffdiff.txt
+</code></pre>
+<p><strong>Ajouter STDOUT à la fin d’un fichier qui existe déjà</strong></p>
+<p>Vous pouvez ajouter la sortie d’une commande à un fichier</p>
+<pre><code>grep Chr9 cuffdiff.txt &gt;&gt; fav_chr_cuffdiff.txt
+</code></pre>
+<p><strong>Rediriger STDERR</strong></p>
+<p>Vous pouvez rediriger STDERR vers un fichier.</p>
+<p>Revoyons ce qu’est réellement STDERR.</p>
+<pre><code>cat blablabla.txt
+</code></pre>
+<blockquote>
+<p>Le fichier blablabla.txt n’existe pas, donc nous obtenons <code>cat: blablabla.txt: No such file or directory</code> imprimé dans le terminal. Ce message est étiqueté par le système d’exploitation comme un message d’erreur ou STDERR.</p>
+</blockquote>
+<p>STDERR est un type de sortie étiquetée que nous pouvons rediriger</p>
+<pre><code>cat blablabla.txt 2&gt; errors.txt
+</code></pre>
+<blockquote>
+<p>Nous pouvons rediriger les messages d’erreur, alias STDERR, vers un nouveau fichier appelé comme nous le voulons</p>
+</blockquote>
+<p>Que se passe-t-il lorsque vous essayez de rediriger STDOUT?</p>
+<pre><code>cat blablabla.txt &gt; errors.txt
+</code></pre>
+<blockquote>
+<p><code>cat: blablabla.txt: No such file or directory</code> est toujours imprimé à l’écran car nous redirigeons seulement STDOUT vers notre fichier. Il n’y a pas de STDOUT dans ce cas et notre fichier sera vide. Comment le vérifieriez-vous?</p>
+</blockquote>
+<p><strong>Rediriger STDOUT et STDERR</strong></p>
+<p>Vous pouvez rediriger à la fois STDOUT et STDERR vers <strong>deux fichiers séparés</strong> en une seule commande.</p>
+<pre><code># affichez-le d'abord dans le terminal
+cat fav_chr_cuffdiff.txt blablabla.file
+
+# rediriger vers deux fichiers, STDOUT vers out.txt, STDERR vers err.txt 
+cat fav_chr_cuffdiff.txt blablabla.file 1&gt; out.txt 2&gt; err.txt
+
+# cela fait la même chose, voyez-vous la différence?
+cat fav_chr_cuffdiff.txt blablabla.file &gt; out.txt 2&gt; err.txt
+
+</code></pre>
+<blockquote>
+<p>Examinez le contenu de <code>out.txt</code> et <code>err.txt</code></p>
+</blockquote>
+<p>Vous pouvez également rediriger à la fois STDOUT et STDERR vers <strong>le même</strong> fichier.</p>
+<pre><code>cat fav_chr_cuffdiff.txt blablabla.file &amp;&gt; all_out_err.txt 
+</code></pre>
+<blockquote>
+<p>Consultez ce qui se trouve dans <code>all_out_err.txt</code></p>
+</blockquote>
+<h1 id="ensemble-de-problèmes">Ensemble de problèmes</h1>
+<ol>
+<li>
+<p>Connectez-vous à votre machine.</p>
+</li>
+<li>
+<p>Quel est le chemin complet de votre répertoire personnel?</p>
+</li>
+<li>
+<p>Remontez d’un répertoire?</p>
+<ul>
+<li>Combien de fichiers contient-il?</li>
+<li>Combien de répertoires?</li>
+</ul>
+</li>
+<li>
+<p>Créez un répertoire appelé <code>ANT3814_problemsets</code> dans votre répertoire personnel.</p>
+</li>
+<li>
+<p>Accédez à ce nouveau répertoire appelé problemsets. Vérifiez que vous êtes dans le bon répertoire en utilisant <code>pwd</code>.</p>
+</li>
+<li>
+<p>Utilisez <code>wget</code> pour copier <a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/PROBLEM_SETS/sequences.nt.fa">https://raw.githubusercontent.com/nomascus/ANT3814/main/PROBLEM_SETS/sequences.nt.fa</a> depuis le web dans votre répertoire</p>
+</li>
+</ol>
+<p>problemsets. Si <code>wget</code> n’est pas disponible sur votre système, utilisez <code>curl -O</code> comme alternative. (Notez que ‘-O’ est la lettre O, pas le chiffre zéro 0)</p>
+<ol start="7">
+<li>
+<p>Sans utiliser d’éditeur de texte, utilisez des commandes Unix pour trouver ces informations pour le fichier <code>sequences.nt.fa</code>.<br>
+Ce fichier peut être trouvé ici <a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/PROBLEM_SETS/sequences.nt.fa">https://raw.githubusercontent.com/nomascus/ANT3814/main/PROBLEM_SETS/sequences.nt.fa</a></p>
+<ul>
+<li>Combien de lignes contient ce fichier?</li>
+<li>Combien de caractères?    (Astuce: consultez les options de wc)</li>
+<li>Quelle est la première ligne de ce fichier?    (Astuce: lisez la page de manuel de head)</li>
+<li>Quelles sont les 3 dernières lignes?    (Astuce: lisez la page de manuel de tail)</li>
+<li>Combien de séquences y a-t-il dans le fichier?    (Astuce: utilisez grep) (Remarque : Le début d’une séquence est indiqué par un caractère <code>&gt;</code>.)</li>
+</ul>
+</li>
+<li>
+<p>Renommez <code>sequences.nt.fa</code> en <code>cancer_genes.fasta</code>. (Astuce: lisez la page de manuel pour mv)</p>
+</li>
+<li>
+<p>Copiez ce fichier distant, cuffdiff.txt, dans votre répertoire problemset. Voici l’URL que vous pouvez utiliser : <a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/PROBLEM_SETS/cuffdiff.txt">https://raw.githubusercontent.com/nomascus/ANT3814/main/PROBLEM_SETS/cuffdiff.txt</a></p>
+</li>
+</ol>
+<p>Utilisez <code>wget</code> pour copier <a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/PROBLEM_SETS/cuffdiff.txt">https://raw.githubusercontent.com/nomascus/ANT3814/main/PROBLEM_SETS/cuffdiff.txt</a> depuis le web dans votre répertoire problemsets. Si <code>wget</code> n’est pas disponible sur votre système, utilisez <code>curl -O</code> comme alternative. (Notez que ‘-O’ est la lettre O, pas le chiffre zéro 0)</p>
+<ol start="10">
+<li>Faites ce qui suit pour <code>cuffdiff.txt</code>. Les descriptions de chaque colonne du fichier sont dans le tableau ci-dessous.
+<ul>
+<li>Regardez les premières lignes du fichier</li>
+<li>Triez le fichier par changement de log ‘log2(fold_change)’, du plus élevé au plus bas, et enregistrez dans un nouveau fichier dans votre répertoire appelé sorted.cuffdiff.out</li>
+<li>Triez le fichier (log du changement le plus élevé au plus bas), puis affichez uniquement les 100 premières lignes. Enregistrez dans un fichier appelé <code>top100.sorted.cuffdiff.out</code>.</li>
+<li>Triez le fichier par changement de log, affichez les 100 premiers, affichez uniquement la première colonne. Il s’agira d’une liste des 100 gènes avec le plus grand changement d’expression. Assurez-vous que votre liste est triée par nom de gène et est unique. Enregistrez cette liste dans un fichier appelé <code>differentially.expressed.genes.txt</code>.</li>
+</ul>
+</li>
+</ol>
+<p><strong>Format du fichier Cuffdiff</strong></p>
+
+<table>
+<thead>
+<tr>
+<th>Numéro de colonne</th>
+<th>Nom de la colonne</th>
+<th>Exemple</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Identifiant testé</td>
+<td>XLOC_000001</td>
+<td>Un identifiant unique décrivant le transcrit, le gène, le transcrit principal ou le CDS testé</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Identifiant testé</td>
+<td>XLOC_000001</td>
+<td>Un identifiant unique décrivant le transcrit, le gène, le transcrit principal ou le CDS testé</td>
+</tr>
+<tr>
+<td>3</td>
+<td>gène</td>
+<td>Lypla1</td>
+<td>Le nom du gène ou les identifiants du gène qui sont testés</td>
+</tr>
+<tr>
+<td>4</td>
+<td>locus</td>
+<td>chr1:4797771-4835363</td>
+<td>Coordonnées génomiques pour faciliter la navigation vers les gènes ou transcrits testés.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>échantillon 1</td>
+<td>Foie</td>
+<td>Libellé (ou numéro si aucun libellé n’est fourni) du premier échantillon testé</td>
+</tr>
+<tr>
+<td>6</td>
+<td>échantillon 2</td>
+<td>Cerveau</td>
+<td>Libellé (ou numéro si aucun libellé n’est fourni) du deuxième échantillon testé</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Statut du test</td>
+<td>NOTEST</td>
+<td>Peut être OK (test réussi), NOTEST (pas assez d’alignements pour le test), LOWDATA (trop complexe ou séquencé de manière trop superficielle), HIDATA (trop de fragments dans le locus), ou FAIL,  lorsque une matrice de covariance mal conditionnée ou une autre exception numérique empêche le test.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>FPKMx</td>
+<td>8.01089</td>
+<td>FPKM du gène dans l’échantillon x</td>
+</tr>
+<tr>
+<td>9</td>
+<td>FPKMy</td>
+<td>8.551545</td>
+<td>FPKM du gène dans l’échantillon y</td>
+</tr>
+<tr>
+<td>10</td>
+<td>log2(FPKMy/FPKMx)</td>
+<td>0.06531</td>
+<td>Le log (base 2) du changement y/x</td>
+</tr>
+<tr>
+<td>11</td>
+<td>test stat</td>
+<td>0.860902</td>
+<td>La valeur de la statistique de test utilisée pour calculer la signification du changement observé dans FPKM</td>
+</tr>
+<tr>
+<td>12</td>
+<td>p value</td>
+<td>0.389292</td>
+<td>La valeur p non corrigée de la statistique de test</td>
+</tr>
+<tr>
+<td>13</td>
+<td>q value</td>
+<td>0.985216</td>
+<td>La valeur p corrigée de la FDR de la statistique de test</td>
+</tr>
+<tr>
+<td>14</td>
+<td>significatif</td>
+<td>no</td>
+<td>Peut être “oui” ou “non”, en fonction de la valeur de p qui est supérieure à la FDR après correction de Benjamini-Hochberg pour les tests multiples</td>
+</tr>
+</tbody>
+</table></div>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Devoir 3 English</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><p>ANT3475: Problem set 3</p>
+<ol>
+<li>
+<p>In the file  <a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/FILES/nobody.txt">nobody.txt</a>, find every occurrence of “Nobody” and print out the line. First do this with  <code>grep</code>, then do it with a perl regular expression. Make sure to print ONLY the lines with “Nobody”</p>
+</li>
+<li>
+<p>In the file  <a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/FILES/nobody.txt">nobody.txt</a>, use perl to substitute every occurrence of ‘Nobody’ with your favorite name and write an output file with that person’s name (ex. Michael.txt).</p>
+</li>
+<li>
+<p>Using regular expressions, find all the FASTA header lines in  <a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/FILES/unix3.fasta">unix3.fasta</a>. Note that the format for a header in a FASTA file is a line that starts with a greater than symbol and is followed by some text (e.g.  <code>&gt;seqName description</code>  where seqName is the sequence name or identifier. The identifier cannot have spaces in it. The description that follows it can have spaces.)</p>
+</li>
+<li>
+<p>If a line matches the format of a FASTA header, extract the sequence identifier (seqID), which is everything before the first space character and description (seqDescription), which is everything after the first space character) using sub patterns (groups). Hint: check how to search for space characters and “not space” characters</p>
+<ul>
+<li>Print sequence information in this format:  <code>id:seqID desc:seqDescription</code></li>
+</ul>
+</li>
+<li>
+<p>The enzyme ApoI has a restriction enzyme cut site: RAATTY where R and Y are degenerate nucleotides. the enzyme will cut the sequence after the first R. Search google for the IUPAC codes to identify the nucleotide possibilities for the R and Y. Write a regular expression to find and print all the lines where the enzyme be a cut the sequence in the following sequence  <a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/FILES/apol.fasta">apoI.fasta</a>.</p>
+</li>
+<li>
+<p>GTTGCCTGAAATGGCGGAACCTTGAAA is 27 nucleotide long, which means that it should be composed of 9 codons. Use regular expressions to split this into 9 codons separated first by tabs, then by new lines. Hint: you will need to use a quantifier and a subpattern and a global search.</p>
+</li>
+</ol>
+</div>
+</body>
+
+</html>

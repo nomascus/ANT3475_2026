@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Devoir2</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="unix2-problème-défini">Unix2: Problème défini</h1>
+<p>Utilisez la ligne de commande pour répondre à toutes les questions suivantes. Pour chaque question, copiez la ligne de code que vous avez utilisée pour répondre à la question et enregistrez-la dans un fichier texte.</p>
+<ol>
+<li>
+<p>Affichez votre UTILISATEUR et HOSTNAME à l’écran</p>
+</li>
+<li>
+<p>Utilisez une variable d’environnement pour afficher un nombre aléatoire à l’écran</p>
+</li>
+<li>
+<p>Enregistrez les variables suivantes en bash : votre nom, votre groupe préféré, le titre de votre livre préféré, une liste de 3 films, le nombre 7, le nombre 3.141592654</p>
+</li>
+<li>
+<p>Quel type de données est chaque variable ?</p>
+</li>
+<li>
+<p>Utilisez les variables pour écrire une phrase qui liste votre nom, votre groupe préféré, le titre de votre livre préféré et les 3 films</p>
+</li>
+<li>
+<p>Multipliez ensemble les deux variables numériques</p>
+</li>
+<li>
+<p>Ajoutez un quatrième film à la variable qui est votre liste de 3 films en utilisant la méthode $( )</p>
+</li>
+<li>
+<p>Ajoutez un cinquième film à la variable qui est votre liste de 3 films en utilisant la méthode ${ }</p>
+</li>
+</ol>
+<p>Téléchargez la séquence génique du gène de l’insuline humaine (INS) à partir d’ici :</p>
+<p><a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/FILES/INS_gene.fasta">https://raw.githubusercontent.com/nomascus/ANT3814/main/FILES/INS_gene.fasta</a></p>
+<ol start="9">
+<li>
+<p>Utilisez grep -v pour extraire la ligne d’en-tête et enregistrez-la en tant que variable appelée $headerINS</p>
+</li>
+<li>
+<p>Utilisez grep pour extraire les lignes de séquence et enregistrez-les en tant que variable appelée $sequenceINS.</p>
+</li>
+<li>
+<p>Affichez $sequenceINS à l’écran. Pourquoi y a-t-il des espaces entre chaque ligne de séquence ?</p>
+</li>
+<li>
+<p>Utilisez sed pour supprimer les espaces entre les lignes de séquence. Notez ici que vous devez utiliser le caractère spécial \s à la place d’un espace blanc dans sed.</p>
+</li>
+<li></li>
+</ol>
+<p>Téléchargez le fichier vcf suivant: <a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/FILES/chr22.1kg.phase3.v5a.trimmed.vcf.gz">https://raw.githubusercontent.com/nomascus/ANT3814/main/FILES/chr22.1kg.phase3.v5a.trimmed.vcf.gz</a></p>
+<p>Décompressez le fichier à l’aide de la commande suivante : gunzip chr22.1kg.phase3.v5a.trimmed.vcf.gz</p>
+<p>Ensuite, le fichier doit se terminer par .vcf au lieu de .vcf.gz</p>
+<p>Les génotypes dans ce VCF sont indiqués comme suit :</p>
+<p>Allèle de référence homozygote :  0|0</p>
+<p>Allèle alternatif homozygote :  1|1</p>
+<p>Hétérozygote :  0|1 ou 0|1</p>
+<ol start="13">
+<li>
+<p>Regardez le fichier. Combien y a-t-il de lignes, et combien de lignes sont des lignes d’en-tête par rapport aux lignes de données ? Combien d’individus y a-t-il dans le VCF ?</p>
+</li>
+<li>
+<p>Utilisez l’approche cat &lt;( ) &lt; ( ) pour afficher les lignes d’en-tête et les 10 dernières lignes</p>
+</li>
+<li>
+<p>Imprimez une version simplifiée du VCF qui inclut uniquement le chromosome, la position, l’allèle de référence, l’allèle alternatif et les génotypes des individus. Enregistrez ce fichier sous le nom de clean.vcf</p>
+</li>
+</ol>
+<p>BONUS : Utilizer grep -E pour créer une version de clean.vcf qui n’inclut que les lignes avec au moins 1 position qui est hétérozygote. Combien y a-t-il de ces positions ?</p>
+</div>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Devoir3 French</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><p>ANT3475 : Série d’exercices 3</p>
+<ol>
+<li>
+<p>Dans le fichier  <a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/FILES/nobody.txt">nobody.txt</a>, trouvez toutes les occurrences de « Nobody » et affichez la ligne. Commencez par utiliser  <code>grep</code>, puis utilisez une expression régulière Perl. Veillez à n’imprimer QUE les lignes contenant « Nobody ».</p>
+</li>
+<li>
+<p>Dans le fichier  <a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/FILES/nobody.txt">nobody.txt</a>, utilisez Perl pour remplacer toutes les occurrences de « Nobody » par votre nom préféré et écrivez un fichier de sortie avec le nom de cette personne (par exemple, Michael.txt). .</p>
+</li>
+<li>
+<p>À l’aide d’expressions régulières, recherchez toutes les lignes d’en-tête FASTA dans  <a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/FILES/unix3.fasta">unix3.fasta</a>. Notez que le format d’un en-tête dans un fichier FASTA est une ligne qui commence par un symbole supérieur à et qui est suivie d’un texte (par exemple  <code>&gt;seqName description</code>  où seqName est le nom ou l’identifiant de la séquence. L’identifiant ne peut pas contenir d’espaces. La description qui suit peut contenir des espaces.</p>
+</li>
+<li>
+<p>Si une ligne correspond au format d’un en-tête FASTA, extrayez l’identifiant de séquence (seqID), qui correspond à tout ce qui précède le premier espace, et la description (seqDescription), qui correspond à tout ce qui suit le premier espace, à l’aide de sous-motifs (groupes). Astuce : vérifiez comment rechercher les espaces et les caractères « non espaces ».</p>
+<ul>
+<li>Imprimez les informations de séquence dans ce format :  <code>id:seqID desc:seqDescription</code></li>
+</ul>
+</li>
+<li>
+<p>L’enzyme ApoI a un site de coupure d’enzyme de restriction : RAATTY où R et Y sont des nucléotides dégénérés. L’enzyme coupera la séquence après le premier R. Recherchez les codes IUPAC sur Google pour identifier les possibilités de nucléotides pour R et Y. Écrivez une expression régulière pour trouver et imprimer toutes les lignes où l’enzyme peut couper la séquence dans la séquence suivante  <a href="https://raw.githubusercontent.com/nomascus/ANT3814/main/FILES/apol.fasta">apoI.fasta</a> .</p>
+</li>
+<li>
+<p>GTTGCCTGAAATGGCGGAACCTTGAAA a une longueur de 27 nucléotides, ce qui signifie qu’il devrait être composé de 9 codons. Utilisez des expressions régulières pour le diviser en 9 codons séparés d’abord par des tabulations, puis par des nouvelles lignes. Indice : vous devrez utiliser un quantificateur, un sous-motif et une recherche globale.</p>
+</li>
+</ol>
+</div>
+</body>
+
+</html>
