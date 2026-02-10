@@ -5,10 +5,10 @@
  Horaire:		Vendredi 8:30 – 11:30 
  Salle:			Pavillon Lionel-Groulx C-3115
  
- Professeur:		Joseph Orkin  
+ Professeur:	Joseph Orkin  
  Courriel:		joseph.orkin@umontreal.ca
  Bureau:		Pavillon Lionel-Groulx 3072
- Disponibilité:		Sur rendez-vous
+ Disponibilité:	Sur rendez-vous
  ```
 
 ##  Description du cours
@@ -39,12 +39,13 @@ Kuderna, L. et al. 2023. A Global Catalog of Whole-Genome Diversity from 233 Pri
 Orkin et al. 2019. Seasonality of the gut microbiota of free-ranging white-faced capuchins in a tropical dry forest. ISMEJ. 13(1):183-196.
 
 Novembre, J. et al. 2008. Genes Mirror Geography Within Europe. Nature, 456: 98–101. 
+
 Schotts, William E (2019). The Linux Command Line: A complete introduction. 2nd Edition. No starch press. San Francisco. https://linuxcommand.org/tlcl.php
 
 
 ## Horaire et organisation des séances (sous réserve de modifications):
 
-| Date | Ensemble des Problèmes| Thème                |
+| Date | Cours | Thème                |
 | ----------- | -| ------------------------------ |
 | 9 jan  | 1 | Ligne de commande Unix |
 | 16 jan  | 2 |Variables bash, awk et sed |
