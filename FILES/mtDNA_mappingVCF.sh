@@ -12,10 +12,10 @@ module load bcftools
 # 1. Define input files
 ############################
 
-REF=Human_mtDNA.fasta
+REF=reference.fasta
 R1=demo_mt_R1.fastq
-R2=demo_mt_R2.fastq
-SAMPLE=demo_sample
+R2=demo_mt_R1.fastq
+SAMPLE=Sample1
 
 ############################
 # 2. Align reads to reference
@@ -23,7 +23,7 @@ SAMPLE=demo_sample
 
 echo "Aligning reads..."
 
-bwa mem -t 4 $REF $R1 $R2 > ${SAMPLE}.sam
+bwa mem -t 1 $REF $R1 $R2 > ${SAMPLE}.sam
 
 ############################
 # 3. Convert SAM → sorted BAM

@@ -1,11 +1,11 @@
-```
 #!/bin/bash
-#SBATCH --job-name=variant_demo
-#SBATCH --output=variant_demo.out
-#SBATCH --error=variant_demo.err
-#SBATCH --time=02:00:00
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=8G
+
+#SBATCH --job-name=vcf_demo_JOE
+#SBATCH --output=vcf_demo.out
+#SBATCH --error=vcf_demo.err
+#SBATCH --time=00:05:00
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=1G
 
 ############################
 # 0. Load modules
@@ -19,10 +19,10 @@ module load bcftools
 # 1. Define input files
 ############################
 
-REF=reference.fa
-R1=reads_R1.fastq.gz
-R2=reads_R2.fastq.gz
-SAMPLE=demo_sample
+REF=reference.fasta
+R1=demo_mt_R1.fastq
+R2=demo_mt_R1.fastq
+SAMPLE=Sample1
 
 ############################
 # 2. Align reads to reference
@@ -30,7 +30,7 @@ SAMPLE=demo_sample
 
 echo "Aligning reads..."
 
-bwa mem -t 4 $REF $R1 $R2 > ${SAMPLE}.sam
+bwa mem -t 1 $REF $R1 $R2 > ${SAMPLE}.sam
 
 ############################
 # 3. Convert SAM → sorted BAM
