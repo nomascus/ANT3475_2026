@@ -1,7 +1,13 @@
-﻿# 
+﻿# Devoir 5
+
 
 ## Téléchargez les fichiers suivants pour les exercices d’aujourd’hui
 
+```
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/Mapping_VCF/reference_mt.fasta
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/Mapping_VCF/mt_multiSNP_2000_R1.fastq 
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/Mapping_VCF/mt_multiSNP_2000_R2.fastq
+```
 ### Description des fichiers
 
 | nom du fichier | type de fichier |  description du fichier |
