@@ -1,0 +1,230 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slides5_MappingVCF_English</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="mapping-reads-and-calling-variants">Mapping reads and calling variants</h1>
+<p>Files to download for today’s class</p>
+<pre><code>wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/Human_mtDNA.fasta
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/demo_mt_R1.fastq
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/demo_mt_R2.fastq
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/mtDNA_mappingVCF.sh
+</code></pre>
+<p>Imagine if you had just downloaded DNA sequencing data from 200 human samples and your goal is to identify how the populations are subdivided by geography. Unfortunately, we can’t just start working on the biological questions, because all the DNA sequencing machine gives us is a giant mixed up pile of <strong>short DNA fragments, called “reads”</strong> that come in a file type called FASTQ (note that this different from FASTA). In order to analyze the data, we need to generate a VCF file, which contains only the nucleotide positions that are variable in our sample. in other words need to go from the raw sequencing reads to the SNPs. That’s the goal for today.</p>
+<h3 id="what-are-fastq-files">What Are FASTQ Files?</h3>
+<p>FASTQ files contain four lines of text for each sequencing read:</p>
+<p>Example:</p>
+<pre><code>@read1_Forward
+ACTGATCGTACGATCGTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTA
++
+IIIIIIIIIIHHHHHHHHHHFFFFFFFFFFDDDDDDDDDD!!!!!!!!!!
+@read2_Forward
+GCTAGCTAGCATCGATCGATCGTAGCTAGCATCGATCGTAGCTAGCATCG
++
+IIIIIIHHHHHHFFFFFFDDDDDD!!!!!!!!!IIIIHHHHFFFFDDDDD
+
+</code></pre>
+<p>This is the raw data from the sequencing machine. It contains:</p>
+<ol>
+<li>
+<p>A header starting with some information about the read we are looking at. FASTQ headers always start with the @ character.</p>
+</li>
+<li>
+<p>A line of nucleotide sequence</p>
+</li>
+<li>
+<p>a plus sign</p>
+</li>
+<li>
+<p>A line of characters corresponding to the quality score for each nucleotide. In other words, how confident is the sequencing machine that the first nucleotide in the read is A, the second nucleotide is C, etc. This quality score lets us remove untrustworthy reads from our analysis</p>
+</li>
+</ol>
+<p><em>Note</em>: DNA sequencing is usually done in the forward and the reverse directions along the DNA strand, so we usually get two FASTQ files for each sample, a forward and a reverse file.</p>
+<p>Before we can start studying the biological questions, we need to:</p>
+<ol>
+<li>Figure out where the reads belong in the genome</li>
+<li>Clean up bad data</li>
+<li>Find differences from the reference genome for each individual</li>
+</ol>
+<h1 id="mapping-fastq-→-sam">1. Mapping (FASTQ → SAM)</h1>
+<p>Before we do anything, we need to load three programs that are stored internally on the server. To do these, we use the <strong>module load</strong> command. If these programs don’t run later, check that you have loaded them first!</p>
+<pre><code>module load samtools
+module load bwa
+module load bcftools
+</code></pre>
+<p>The mapping process takes a FASTQ file and assigns each read to the most likely position in a reference genome. With enough reads, we can cover the entire genome.</p>
+<p>Imagine that you had a shredded copy of a document. It’s kind of like taking each piece of shredded paper and lining it up against another copy of the document to find where it belongs.</p>
+<p><img src="https://training.galaxyproject.org/training-material/topics/sequence-analysis/images/mapping/mapping.png" alt="Hands-on: Mapping / Mapping / Sequence analysis"></p>
+<p>The difference here is that we use areference genome, which is just a FASTA file of all the nucleotides lined up in all the chromosomes for the organism we want to study. For example, the human genome is 3 billion nucleotides long, and we have to find where each sequencing read fits.</p>
+<p>Because a reference genome file can be huge, we need to build an index file that helps other programs find the mapped reads more quickly. This is analogous to having an index in the back of a cookbook helping you find the page of a recipe.</p>
+<pre><code>samtools faidx reference.fasta 
+bwa index reference.fasta 
+</code></pre>
+<p>Here, we use the <strong>samtools index</strong> and <strong>bwa index</strong> commands to make the index files. The index files will automatically be created and end in .amb, .ann, .bwt, .fai, .pac, and .sa</p>
+<p>To map reads, we use a program called <strong>bwa mem</strong></p>
+<pre><code>bwa mem -t 1 reference.fasta reads_sample1_F.fastq reads_sample1_R.fastq &gt; mappedReads_sample1.sam
+</code></pre>
+<p>We call the program bwa mem, then give it three files:</p>
+<ol>
+<li>The reference genome</li>
+<li>The forward reads (often compressed in .gz format)</li>
+<li>The reverse reads (often compressed in .gz format)</li>
+</ol>
+<p>and then save it (redirect the output of bwa mem) into a new file, which is called a sam file.</p>
+<p>The <strong>-t 1</strong> option indicates that we want to use a single processor on the computer. For a really big file, we might need to increase this number, but this is a tiny example.</p>
+<h3 id="what-is-a-sam-file">What is a SAM file?</h3>
+<p>SAM (Sequence Alignment/Map) is a text file that stores:</p>
+<ul>
+<li>Where each read maps in the genome</li>
+<li>The mapping quality</li>
+<li>Alignment details</li>
+</ul>
+<p>Here is an example of what a SAM file looks like.</p>
+<pre><code>@HD	VN:1.6	SO:coordinate
+@SQ	SN:chr1	LN:1000
+
+read1	0	chr5	1540	60	50M	*	0	0	ACTGATCGTACGATCGTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTA	IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII!!!!!!!!!#####
+read2	0	chr1	292	15	50M	*	0	0	GCTAGCTAGCATCGATCGATCGTAGCTAGCATCGATCGTAGCTAGCATCG	#####!!!!!!!!!IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+
+</code></pre>
+<p>We don’t need to go into details, but basically it says:</p>
+<p>Read one should start at position 1540 on chromosome 5, and it is confident that it belongs there (mapping quality score of 60),</p>
+<p>Read two should start at position 292 on chromosome 1, and it is not very confident that it belongs there (mapping quality score of 15),</p>
+<p>In a real SAM file there will be millions of reads all of which cover each nucleotide position many times.</p>
+<h1 id="compress-sort-and-index-the-sam-file">2.  Compress, sort and index the SAM file</h1>
+<p>Now that we have a our mapping file, we need to organize it and compress it, because many downstream programs require reads to be ordered by chromosome and nucleotide position. The sam file we have is huge and the reads are in a random order.  To do this, we use a group of programs called <strong>samtools</strong>.</p>
+<pre><code>samtools view -bS mappedReads_sample1.sam | samtools sort -o mappedReads_sample1.sorted.bam
+</code></pre>
+<p>Let’s break this down</p>
+<ol>
+<li>
+<p><strong>samtools view</strong> opens the sam file. <strong>-bS</strong> tells it that the input file will be a SAM and the output will be a compressed version called a <strong>BAM</strong> file.</p>
+</li>
+<li>
+<p>We pipe the output into <strong>samtools sort</strong>, which sorts the bam file by chromosome and nucleotide position</p>
+</li>
+<li>
+<p><strong>-o</strong> tells us that the name of the output file will be mappedReads_sample1.sorted.bam</p>
+</li>
+</ol>
+<p>There is one more small preparatory step. Because the BAM file can be huge, we need to build an index file that helps other programs find the mapped reads more quickly.</p>
+<pre><code>samtools index mappedReads_sample1.sorted.bam
+</code></pre>
+<p>Here, we use the <strong>samtools index</strong> command to make the index file. The index file will automatically be created and end in .bai</p>
+<pre><code>mappedReads_sample1.sorted.bam.bai 
+</code></pre>
+<h1 id="filter-the-bam-file">3. Filter the BAM File</h1>
+<p>Remember that there is a mapping quality score for each read in our BAM file. The computer does it’s best to find a position in the genome for every read, but sometimes it mistakenly maps a read to the wrong place or multiple places in the genome. This can be the result of many factors, such as contaminant bacterial DNA in the sample, degraded DNA, poorly made reference genomes, or sequencing errors. We need to remove the reads that map poorly so we only work with nucleotide sequences that are from the right organism and mapped to the right place.</p>
+<pre><code>samtools view -b -q 20 mappedReads_sample1.sorted.bam &gt; mappedReads_sample1.sorted.filtered.bam
+</code></pre>
+<p>Here again, we are using <strong>samtools view</strong> to open  bam file with the -b option, then we add <strong>-q 20</strong>,  which tells removes reads with mapping quality scores below 20. This step greatly improves data reliability. Then we save it as a new file using the redirect symbol <strong>&gt;</strong></p>
+<h1 id="variant-calling-bam-→-vcf">4. Variant Calling (BAM → VCF)</h1>
+<p>Now that we have a nice clean bam file, it’s time to make the <strong>VCF</strong>. Remember that this is the <strong>Variant Call File</strong>,  which gives us a list of all the variable positions in the genome, and the genotype of each individual. in our sample.</p>
+<h3 id="calling-variants-with-bcftools">Calling variants with bcftools</h3>
+<pre><code>bcftools mpileup -Ou -f reference.fasta mappedReads_sample1.sorted.filtered.bam | \
+bcftools call -mv -Ov -o HumanSamples.vcf
+</code></pre>
+<p><strong>bcftools</strong> is another suite of programs for working with genomic data. We are going to use two of its programs</p>
+<ol>
+<li><code>mpileup</code> looks at every position in the genome and sees how many reads cover that position. For example:</li>
+</ol>
+<p><img src="https://github.com/nomascus/ANT3475_2026/blob/main/FILES/mpileup.png?raw=true" alt=""></p>
+<p><strong>-Ou</strong> means that the output type is an uncompressed BAM</p>
+<p><strong>-f</strong> specifies the reference genome file</p>
+<p>Note that here we are just using a single BAM from a single sample. However, if we want to want to feed the program bam files from multiple different individuals at the same time, we can replace the BAM file with  <strong>-b bamlist.txt</strong>, which would be a file we make in vi that is just a list of BAM files For example:</p>
+<pre><code>$ cat bamlist.txt
+mappedReads_sample1.sorted.filtered.bam
+mappedReads_sample2.sorted.filtered.bam
+mappedReads_sample3.sorted.filtered.bam
+mappedReads_sample4.sorted.filtered.bam
+</code></pre>
+<ol start="2">
+<li><code>call</code> identifies positions where the sample differs from the reference genome.</li>
+</ol>
+<p><img src="https://github.com/nomascus/ANT3475_2026/blob/main/FILES/mpileupCall2.png?raw=true" alt=""></p>
+<p>Here, you can see that there are two potential SNPs, a possible A/G at position 10, and a possible A/C at position 18.</p>
+<p>With <strong>bcftools call</strong> we are taking the output of <strong>bcftools mpileup</strong> from the pipe, pulling out the variable positions, and converting the format to VCF.</p>
+<p>Here is what the other options from bcftools call mean:</p>
+<p><strong>-mv</strong> use the standard variant caller and only take the variable positions<br>
+<strong>-Ov</strong> output format is VCF<br>
+<strong>-o</strong> name of the output file</p>
+<p>The output is a <strong>VCF file</strong> that only lists the variable postions that differ from the reference genome in one or more individuals. Here is an example of one.</p>
+<pre><code>##fileformat=VCFv4.2
+##source=demo_pipeline
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	sample1 sample2
+chr1	105	.	A	G	50	PASS	.	GT	0/1	0/1
+chr1	220	.	C	T	12	LowQual	.	GT	0/0	0/1
+chr1	350	.	G	A	99	PASS	.	GT	1/1 1/0
+</code></pre>
+<p>As we discussed before, a VCF contains the following lines</p>
+<p>Metadata header lines that start with ##:</p>
+<pre><code>##fileformat=VCFv4.2
+##source=demo_pipeline
+</code></pre>
+<p>A column header line that starts with #:<br>
+<code>#CHROM POS ID REF ALT QUAL FILTER INFO FORMAT sample1 sample2</code></p>
+<p>and lines for each SNP</p>
+<pre><code>chr1	105	.	A	G	50	PASS	.	GT	0/1	0/1
+chr1	220	.	C	T	12	LowQual	.	GT	0/0	0/1
+chr1	350	.	G	A	99	PASS	.	GT	1/1 1/0
+</code></pre>
+<h1 id="filter-the-vcf">5. Filter the VCF</h1>
+<p>The VCF we made includes any potential SNPs, even those that the program is not confident about. For example, if a nucleotide reference position is A, and it is covered by 9 reads 7 of which are A and two of which are T, it’s difficult to be confident that this is a real SNP. In this case the confidence in the SNP call might be low.</p>
+<p>To be safe, we should remove these low confidence SNPs</p>
+<pre><code>bcftools filter -i 'QUAL&gt;30' HumanSamples.vcf -o HumanSamples.filtered.vcf` 
+</code></pre>
+<p>Here we are using another bcftools program called <strong>bcftools filter</strong>  to only keep SNPs with a quality score of at least 30.</p>
+<p>The option <strong>-i</strong> stands for “information” and allows us to write a complex string of filtering parameters. For now we are just going to tell it about the quality scores, but remember to include the quotes.</p>
+<hr>
+<h2 id="summary-of-file-types-and-programs">Summary of File Types and programs</h2>
+
+<table>
+<thead>
+<tr>
+<th>File Type</th>
+<th>Description</th>
+<th>Program to use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FASTQ</td>
+<td>Sequencing reads</td>
+<td>bwa mem</td>
+</tr>
+<tr>
+<td>SAM</td>
+<td>Mapping file</td>
+<td>samtools view, samtools sort</td>
+</tr>
+<tr>
+<td>BAM</td>
+<td>Compressed mapping file</td>
+<td>samtools filter,  bcftools mpileup, bcftools call</td>
+</tr>
+<tr>
+<td>BAI</td>
+<td>BAM index file</td>
+<td>samtools index</td>
+</tr>
+<tr>
+<td>.amb, .ann, .bwt, .fai, .pac, and .sa</td>
+<td>reference genome index files</td>
+<td>samtools index, bwa index</td>
+</tr>
+<tr>
+<td>VCF</td>
+<td>Variant call file</td>
+<td>bcftools filter</td>
+</tr>
+</tbody>
+</table></div>
+</body>
+
+</html>

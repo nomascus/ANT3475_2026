@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Devoir5_MappingVCF_Francais</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="section"></h1>
+<h2 id="téléchargez-les-fichiers-suivants-pour-les-exercices-d’aujourd’hui">Téléchargez les fichiers suivants pour les exercices d’aujourd’hui</h2>
+<h3 id="description-des-fichiers">Description des fichiers</h3>
+
+<table>
+<thead>
+<tr>
+<th>nom du fichier</th>
+<th>type de fichier</th>
+<th>description du fichier</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reference_mt.fasta</td>
+<td>FASTA</td>
+<td>génome de référence mitochondrial humain</td>
+</tr>
+<tr>
+<td>mt_multiSNP_2000_R1.fastq</td>
+<td>FASTQ</td>
+<td>2000 lectures mitochondriales humaines (lectures avant)</td>
+</tr>
+<tr>
+<td>mt_multiSNP_2000_R2.fastq</td>
+<td>FASTQ</td>
+<td>2000 lectures mitochondriales humaines (lectures arrière)</td>
+</tr>
+</tbody>
+</table><ol>
+<li>
+<p>Chargez les modules pour <strong>bwa</strong>, <strong>samtools</strong> et <strong>bcftools</strong></p>
+</li>
+<li>
+<p>Créez tous les fichiers d’index pour le génome de référence</p>
+</li>
+<li>
+<p>Alignez les lectures sur le génome de référence</p>
+</li>
+<li>
+<p>Compressez, triez et indexez le fichier SAM</p>
+</li>
+<li>
+<p>Filtrez le fichier BAM pour retirer les lectures ayant un score d’alignement inférieur à 20</p>
+</li>
+<li>
+<p>Appelez les variants (créez un VCF) à partir du fichier BAM filtré</p>
+</li>
+<li>
+<p>Filtrez le VCF pour retirer les SNP ayant un score de qualité inférieur à 30</p>
+</li>
+<li>
+<p>Quel SNP a été retiré du VCF lors du processus de filtrage à l’étape 7 ?</p>
+</li>
+</ol>
+</div>
+</body>
+
+</html>

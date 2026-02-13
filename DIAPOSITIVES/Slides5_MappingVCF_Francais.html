@@ -1,0 +1,241 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slides5_MappingVCF_Francais</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="alignement-des-reads-et-appel-de-variants">Alignement des reads et appel de variants</h1>
+<p>Fichiers à télécharger pour le cours d’aujourd’hui</p>
+<pre><code>wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/Human_mtDNA.fasta
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/demo_mt_R1.fastq
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/demo_mt_R2.fastq
+</code></pre>
+<p>Imaginez que vous venez de télécharger des données de séquençage d’ADN provenant de 200 échantillons humains et que votre objectif est d’identifier comment les populations sont subdivisées selon la géographie. Malheureusement, on ne peut pas commencer directement à travailler sur les questions biologiques, parce que tout ce que la machine de séquençage nous donne, c’est un énorme mélange de <strong>courts fragments d’ADN, appelés “reads” (lectures de séquençage))</strong>, dans un type de fichier appelé FASTQ (notez que c’est différent du FASTA).</p>
+<p>Afin d’analyser les données, nous devons générer un fichier VCF qui ne contient que les positions nucléotidiques variables dans notre échantillon. En d’autres termes, nous devons passer des lectures de séquençage brutes aux SNP. C’est l’objectif d’aujourd’hui.</p>
+<h3 id="que-sont-les-fichiers-fastq-">Que sont les fichiers FASTQ ?</h3>
+<p>Les fichiers FASTQ contiennent quatre lignes de texte pour chaque lecture :</p>
+<p>Exemple :</p>
+<pre><code>@read1_Forward
+ACTGATCGTACGATCGTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTA
++
+IIIIIIIIIIHHHHHHHHHHFFFFFFFFFFDDDDDDDDDD!!!!!!!!!!
+@read2_Forward
+GCTAGCTAGCATCGATCGATCGTAGCTAGCATCGATCGTAGCTAGCATCG
++
+IIIIIIHHHHHHFFFFFFDDDDDD!!!!!!!!!IIIIHHHHFFFFDDDDD
+
+
+</code></pre>
+<p>Ce sont les données brutes de la machine de séquençage. Elles contiennent :</p>
+<ol>
+<li>
+<p>Un en-tête qui commence avec de l’information sur le read qu’on regarde. Les en-têtes FASTQ commencent toujours par le caractère @.</p>
+</li>
+<li>
+<p>Une ligne de séquence nucléotidique</p>
+</li>
+<li>
+<p>Un signe plus</p>
+</li>
+<li>
+<p>Une ligne de caractères correspondant au score de qualité pour chaque nucléotide. Autrement dit, à quel point la machine de séquençage est confiante que le premier nucléotide du read est A, le deuxième est C, etc. Ce score de qualité nous permet de retirer les reads peu fiables de notre analyse.</p>
+</li>
+</ol>
+<p><em>Remarque</em> : Le séquençage de l’ADN se fait habituellement dans les directions avant et arrière le long du brin d’ADN ; donc, on obtient souvent deux fichiers FASTQ par échantillon, un fichier avant et un fichier arrière.</p>
+<p>Avant de pouvoir commencer à étudier les questions biologiques, nous devons :</p>
+<ol>
+<li>
+<p>Déterminer où les lectures se placent dans le génome</p>
+</li>
+<li>
+<p>Nettoyer les mauvaises données</p>
+</li>
+<li>
+<p>Trouver les différences par rapport au génome de référence pour chaque individu</p>
+</li>
+</ol>
+<h1 id="alignement-fastq-→-sam">1. Alignement (FASTQ → SAM)</h1>
+<p>Avant de faire quoi que ce soit, nous devons charger trois programmes qui sont stockés sur le serveur. Pour faire ça, on utilise la commande <strong>module load</strong>. Si ces programmes ne fonctionnent pas plus tard, vérifiez d’abord que vous les avez bien chargés !</p>
+<pre><code>module load samtools
+module load bwa
+module load bcftools
+</code></pre>
+<p>Le processus d’alignement prend un fichier FASTQ et assigne chaque read à la position la plus probable dans un génome de référence. Avec assez de reads, on peut couvrir tout le génome.</p>
+<p>Imaginez que vous avez une copie déchiquetée d’un document. C’est un peu comme prendre chaque morceau de papier déchiqueté et l’aligner avec une autre copie du document pour trouver où il appartient.</p>
+<p><img src="https://training.galaxyproject.org/training-material/topics/sequence-analysis/images/mapping/mapping.png" alt="Hands-on: Mapping / Mapping / Sequence analysis"></p>
+<p>La différence ici est qu’on utilise un génome de référence, qui est simplement un fichier FASTA avec tous les nucléotides alignés sur tous les chromosomes de l’organisme qu’on veut étudier. Par exemple, le génome humain fait environ 3 milliards de nucléotides, et on doit trouver où chaque read s’insère.</p>
+<p>Comme un fichier de génome de référence peut être très gros, on doit créer un index qui aide les autres programmes à retrouver les reads alignés plus rapidement. C’est comparable à l’index à la fin d’un livre de recettes qui vous aide à trouver la page d’une recette.</p>
+<pre><code>samtools faidx reference.fasta 
+bwa index reference.fasta 
+</code></pre>
+<p>Ici, on utilise les commandes <strong>samtools faidx</strong> et <strong>bwa index</strong> pour créer les fichiers d’index. Les fichiers d’index seront créés automatiquement et vont se terminer par .amb, .ann, .bwt, .fai, .pac et .sa.</p>
+<p>Pour aligner les reads, on utilise un programme appelé <strong>bwa mem</strong>.</p>
+<pre><code>bwa mem -t 1 reference.fasta reads_sample1_F.fastq reads_sample1_R.fastq &gt; mappedReads_sample1.sam
+</code></pre>
+<p>On lance bwa mem, puis on lui donne trois fichiers :</p>
+<ol>
+<li>
+<p>Le génome de référence</p>
+</li>
+<li>
+<p>Les lectures avant (souvent compressés en .gz)</p>
+</li>
+<li>
+<p>Les lectures arrière (souvent compressés en .gz)</p>
+</li>
+</ol>
+<p>et ensuite on sauvegarde le résultat (on redirige la sortie de bwa mem) dans un nouveau fichier, appelé un fichier SAM.</p>
+<p>L’option <strong>-t 1</strong> indique qu’on veut utiliser un seul processeur sur l’ordinateur. Pour un très gros fichier, il faudrait augmenter ce nombre, mais ici c’est un petit exemple.</p>
+<h3 id="qu’est-ce-qu’un-fichier-sam-">Qu’est-ce qu’un fichier SAM ?</h3>
+<p>SAM (Sequence Alignment/Map) est un fichier texte qui contient :</p>
+<ul>
+<li>
+<p>Où chaque read s’aligne dans le génome</p>
+</li>
+<li>
+<p>La qualité d’alignement (MAPQ)</p>
+</li>
+<li>
+<p>Des détails sur l’alignement</p>
+</li>
+</ul>
+<p>Voici un exemple de fichier SAM.</p>
+<pre><code>@HD	VN:1.6	SO:coordinate
+@SQ	SN:chr1	LN:1000
+
+read1	0	chr5	1540	60	50M	*	0	0	ACTGATCGTACGATCGTAGCTAGCTAGCTAGCTAGCTAGCTAGCTAGCTA	IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII!!!!!!!!!#####
+read2	0	chr1	292	15	50M	*	0	0	GCTAGCTAGCATCGATCGATCGTAGCTAGCATCGATCGTAGCTAGCATCG	#####!!!!!!!!!IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+</code></pre>
+<p>On n’a pas besoin d’entrer dans les détails, mais essentiellement ça veut dire :</p>
+<p>Le lecture 1 devrait commencer à la position 1540 sur le chromosome 5, et le programme est confiant qu’il appartient à cet endroit (MAPQ = 60),</p>
+<p>Le lecture 2 devrait commencer à la position 292 sur le chromosome 1, et le programme n’est pas très confiant qu’il appartient à cet endroit (MAPQ = 15),</p>
+<p>Dans un vrai fichier SAM, il y aura des millions de lectures qui couvrent chaque position nucléotidique plusieurs fois.</p>
+<h1 id="compresser-trier-et-indexer-le-fichier-sam">2. Compresser, trier et indexer le fichier SAM</h1>
+<p>Maintenant qu’on a notre fichier d’alignement, on doit l’organiser et le compresser, parce que beaucoup de programmes “en aval” demandent que les lectures soient ordonnés par chromosome et par position nucléotidique. Le fichier SAM qu’on a est énorme et les lectures sont dans un ordre aléatoire. Pour faire ça, on utilise un ensemble de programmes appelé <strong>samtools</strong>.</p>
+<pre><code>samtools view -bS mappedReads_sample1.sam | samtools sort -o mappedReads_sample1.sorted.bam
+</code></pre>
+<p>Décomposons ça :</p>
+<ol>
+<li>
+<p><strong>samtools view</strong> ouvre le fichier SAM. <strong>-bS</strong> indique que l’entrée est un SAM et que la sortie sera une version compressée appelée un fichier <strong>BAM</strong>.</p>
+</li>
+<li>
+<p>On “pipe” la sortie vers <strong>samtools sort</strong>, qui trie le fichier BAM par chromosome et par position nucléotidique.</p>
+</li>
+<li>
+<p><strong>-o</strong> indique que le nom du fichier de sortie sera mappedReads_sample1.sorted.bam.</p>
+</li>
+</ol>
+<p>Il reste une petite étape de préparation. Comme le fichier BAM peut être très gros, on doit créer un fichier d’index qui aide les autres programmes à retrouver les lectures alignés plus rapidement.</p>
+<pre><code>samtools index mappedReads_sample1.sorted.bam
+</code></pre>
+<p>Ici, on utilise la commande <strong>samtools index</strong> pour créer le fichier d’index. Le fichier d’index sera créé automatiquement et va se terminer par .bai</p>
+<pre><code>mappedReads_sample1.sorted.bam.bai 
+</code></pre>
+<h1 id="filtrer-le-fichier-bam">3. Filtrer le fichier BAM</h1>
+<p>Rappelez-vous qu’il y a un score de qualité d’alignement (MAPQ) pour chaque lecture dans notre fichier BAM. L’ordinateur fait de son mieux pour trouver une position dans le génome pour chaque read, mais parfois il aligne un lecutre au mauvais endroit, ou à plusieurs endroits du génome. Cela peut arriver pour plusieurs raisons : ADN bactérien contaminant dans l’échantillon, ADN dégradé, génome de référence de mauvaise qualité, ou erreurs de séquençage. On doit retirer les lectures mal alignés, pour ne garder que des séquences qui viennent du bon organisme et qui sont alignées au bon endroit.</p>
+<pre><code>samtools view -b -q 20 mappedReads_sample1.sorted.bam &gt; mappedReads_sample1.sorted.filtered.bam
+</code></pre>
+<p>Ici encore, on utilise <strong>samtools view</strong> pour ouvrir le fichier BAM avec l’option -b, puis on ajoute <strong>-q 20</strong>, ce qui retire les lecture avec un score MAPQ inférieur à 20. Cette étape améliore beaucoup la fiabilité des données. Ensuite, on sauvegarde le résultat dans un nouveau fichier avec le symbole de redirection <strong>&gt;</strong>.</p>
+<h1 id="appel-de-variants-bam-→-vcf">4. Appel de variants (BAM → VCF)</h1>
+<p>Maintenant qu’on a un fichier BAM propre, c’est le moment de créer le <strong>VCF</strong>. Rappelez-vous que c’est le <strong>Variant Call File</strong>, qui nous donne une liste de toutes les positions variables dans le génome, ainsi que le génotype de chaque individu dans notre échantillon.</p>
+<h3 id="appeler-des-variants-avec-bcftools">Appeler des variants avec bcftools</h3>
+<pre><code>bcftools mpileup -Ou -f reference.fasta mappedReads_sample1.sorted.filtered.bam |
+bcftools call -mv -Ov -o HumanSamples.vcf
+</code></pre>
+<p><strong>bcftools</strong> est une autre suite de programmes pour travailler avec des données génomiques. On va utiliser deux de ses programmes.</p>
+<ol>
+<li><code>mpileup</code> regarde chaque position du génome et vérifie combien de lectures couvrent cette position. Par exemple :</li>
+</ol>
+<p><img src="https://github.com/nomascus/ANT3475_2026/blob/main/FILES/mpileup.png?raw=true" alt=""></p>
+<p><strong>-Ou</strong> veut dire que le type de sortie est un VCF non compressé</p>
+<p><strong>-f</strong> spécifie le fichier du génome de référence</p>
+<ol start="2">
+<li><code>call</code> identifie les positions où l’échantillon est différent du génome de référence.</li>
+</ol>
+<p><img src="https://github.com/nomascus/ANT3475_2026/blob/main/FILES/mpileupCall2.png?raw=true" alt=""></p>
+<p>Ici, vous pouvez voir qu’il y a deux SNP potentiels : un A/G possible à la position 10 et un A/C possible à la position 18.</p>
+<p>Avec <strong>bcftools call</strong>, on prend la sortie de <strong>bcftools mpileup</strong> du pipe, on garde seulement les positions variables, et on convertit le format en VCF.</p>
+<p>Voici ce que veulent dire les autres options de bcftools call :</p>
+<p><strong>-mv</strong> utiliser l’appel de variants standard et ne garder que les positions variables<br>
+<strong>-Ov</strong> le format de sortie est VCF<br>
+<strong>-o</strong> le nom du fichier de sortie</p>
+<p>Le résultat est un <strong>fichier VCF</strong> qui liste seulement les positions variables qui diffèrent du génome de référence chez un ou plusieurs individus. Voici un exemple.</p>
+<pre><code>##fileformat=VCFv4.2
+##source=demo_pipeline
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	sample1 sample2
+chr1	105	.	A	G	50	PASS	.	GT	0/1	0/1
+chr1	220	.	C	T	12	LowQual	.	GT	0/0	0/1
+chr1	350	.	G	A	99	PASS	.	GT	1/1 1/0
+</code></pre>
+<p>Comme on l’a vu, un VCF contient les lignes suivantes :</p>
+<p>Lignes d’en-tête (métadonnées) qui commencent par ## :</p>
+<pre><code>##fileformat=VCFv4.2
+##source=demo_pipeline
+</code></pre>
+<p>Une ligne d’en-tête des colonnes qui commence par # :<br>
+<code>#CHROM POS ID REF ALT QUAL FILTER INFO FORMAT sample1 sample2</code></p>
+<p>et des lignes pour chaque SNP :</p>
+<pre><code>chr1	105	.	A	G	50	PASS	.	GT	0/1	0/1
+chr1	220	.	C	T	12	LowQual	.	GT	0/0	0/1
+chr1	350	.	G	A	99	PASS	.	GT	1/1 1/0
+</code></pre>
+<h1 id="filtrer-le-vcf">5. Filtrer le VCF</h1>
+<p>Le VCF qu’on a créé inclut tous les SNP potentiels, même ceux pour lesquels le programme n’est pas très confiant. Par exemple, si une position de référence est A et qu’elle est couverte par 9 lectures (7 A et 2 T), c’est difficile d’être confiant que c’est un vrai SNP. Dans ce cas, la confiance dans l’appel du SNP peut être faible.</p>
+<p>Par prudence, on devrait retirer ces SNP de faible confiance.</p>
+<pre><code>bcftools filter -i 'QUAL&gt;30' HumanSamples.vcf -o HumanSamples.filtered.vcf` 
+</code></pre>
+<p>Ici, on utilise un autre programme de bcftools appelé <strong>bcftools filter</strong> pour garder seulement les SNP avec un score QUAL d’au moins 30.</p>
+<p>L’option <strong>-i</strong> signifie « information » et nous permet d’écrire une chaîne complexe de paramètres de filtrage. Pour l’instant, nous allons simplement lui indiquer les scores de qualité, mais n’oubliez pas d’inclure les guillemets.</p>
+<hr>
+<h2 id="résumé-des-types-de-fichiers-et-des-programmes">Résumé des types de fichiers et des programmes</h2>
+
+<table>
+<thead>
+<tr>
+<th>Type de fichier</th>
+<th>Description</th>
+<th>Programme à utiliser</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FASTQ</td>
+<td>Reads de séquençage</td>
+<td>bwa mem</td>
+</tr>
+<tr>
+<td>SAM</td>
+<td>Fichier d’alignement</td>
+<td>samtools view, samtools sort</td>
+</tr>
+<tr>
+<td>BAM</td>
+<td>Fichier d’alignement compressé</td>
+<td>samtools filter, bcftools mpileup, bcftools call</td>
+</tr>
+<tr>
+<td>BAI</td>
+<td>Fichier d’index BAM</td>
+<td>samtools index</td>
+</tr>
+<tr>
+<td>.amb, .ann, .bwt, .fai, .pac, and .sa</td>
+<td>Fichiers d’index du génome de référence</td>
+<td>samtools index, bwa index</td>
+</tr>
+<tr>
+<td>VCF</td>
+<td>Fichier d’appel de variants</td>
+<td>bcftools filter</td>
+</tr>
+</tbody>
+</table></div>
+</body>
+
+</html>
