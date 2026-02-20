@@ -1,0 +1,2 @@
+reference_mt.fasta	reads_sample1_F.fastq	reads_sample1_R.fastq        Sample1
+reference_mt.fasta	mt_multiSNP_2000_R1.fastq	mt_multiSNP_2000_R2.fastq	Sample2
