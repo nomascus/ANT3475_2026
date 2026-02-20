@@ -1,0 +1,362 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slide6_Pipelines_HPC_Francais</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="ant3475-cours-6--pipelines-et-hpc">ANT3475 Cours 6 : Pipelines et HPC</h1>
+<p>Voici les fichiers à télécharger pour le cours d’aujourd’hui. Veuillez commencer par créer un nouveau répertoire comme suit.</p>
+<pre><code>mkdir ~/scratch/6_HPC
+cd ~/scratch/6_HPC
+
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/6_HPC/reference_mt.fasta
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/6_HPC/mt_multiSNP_2000_R1.fastq 
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/6_HPC/mt_multiSNP_2000_R2.fastq
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/6_HPC/reads_sample1_F.fastq
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/6_HPC/reads_sample1_R.fastq
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/6_HPC/metadataHPC.txt
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/6_HPC/metadata_batch.txt
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/6_HPC/mtDNA_mappingVCF.sh
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/6_HPC/mtDNA_mappingVCF2.sh
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/FILES/6_HPC/mtDNA_mappingVCF2.sbatch
+</code></pre>
+<hr>
+<h1 id="tout-assembler-dans-un-pipeline">Tout assembler dans un pipeline</h1>
+<p>Nous avons fait beaucoup de bioinformatique la semaine dernière lorsque nous avons généré ces fichiers VCF ! Cependant, il n’est pas très efficace de taper toutes ces lignes de texte une par une, surtout si vous voulez exécuter cela sur des dizaines ou des centaines d’échantillons. C’est pourquoi nous créons des scripts appelés <strong>pipelines</strong> qui enchaînent tous ces programmes afin que nous puissions exécuter l’ensemble du processus en une seule ligne de commande.</p>
+<p>Un pipeline est un long fichier texte que nous créons dans vi et qui se termine par <strong>.sh</strong> si nous l’exécutons en ligne de commande ou <strong>.sbatch</strong> si nous l’exécutons à distance (nous y reviendrons plus tard).</p>
+<p>Voici un exemple de pipeline pour tout ce que nous avons fait la semaine dernière.</p>
+<p><code>vi mtDNA_mappingVCF.sh</code></p>
+<pre><code>#!/bin/bash
+
+############################
+# 0. Load modules
+############################
+
+module load bwa
+module load samtools
+module load bcftools
+
+############################
+# 1. Define input files.
+############################
+
+REF=reference_mt.fasta
+R1=reads_sample1_F.fastq
+R2=reads_sample1_R.fastq
+SAMPLE='Sample1'
+
+############################
+# 2. Index reference files 
+############################
+
+echo "Indexing reference..."
+
+samtools faidx $REF
+bwa index $REF
+
+############################
+# 3. Align reads to reference
+############################
+
+echo "Aligning reads..."
+
+bwa mem $REF $R1 $R2 &gt; ${SAMPLE}.sam
+
+############################
+# 4. Convert SAM → sorted BAM
+############################
+
+echo "Converting to BAM..."
+
+samtools view -bS ${SAMPLE}.sam | \
+samtools sort -o ${SAMPLE}.sorted.bam
+
+############################
+# 5. Index BAM
+############################
+
+samtools index ${SAMPLE}.sorted.bam
+
+############################
+# 6. Basic BAM filtering
+# (remove low mapping quality reads)
+############################
+
+echo "Filtering BAM..."
+
+samtools view -b -q 20 ${SAMPLE}.sorted.bam &gt; ${SAMPLE}.filtered.bam
+samtools index ${SAMPLE}.filtered.bam
+
+############################
+# 7. Call variants
+############################
+
+echo "Calling variants..."
+
+bcftools mpileup -Ou -f $REF ${SAMPLE}.filtered.bam | \
+bcftools call -mv -Ov -o ${SAMPLE}.vcf
+
+############################
+# 8. Filter VCF
+# (keep QUAL &gt; 30)
+############################
+
+echo "Filtering VCF..."
+
+bcftools filter -i 'QUAL&gt;30' ${SAMPLE}.vcf -o ${SAMPLE}.filtered.vcf
+
+echo "Pipeline complete!"
+</code></pre>
+<hr>
+<ol>
+<li>
+<p>La première ligne est toujours <strong>#!/bin/bash</strong>. Il s’agit d’une ligne spéciale qui indique à l’ordinateur qu’il s’agit d’un programme bash. Ne l’oubliez pas !</p>
+</li>
+<li>
+<p>Pour toutes les autres lignes, un <strong>#</strong> signifie que la ligne est un commentaire. Les lignes de commentaire <strong>ne sont pas exécutées</strong> par l’ordinateur (il existe quelques exceptions comme #! et #SBATCH). Vous pouvez les utiliser pour prendre des notes, rendre votre code plus lisible et le diviser en blocs visibles.</p>
+</li>
+<li>
+<p>Dans le bloc 0, nous chargeons les trois programmes : samtools, bwa et bcftools.</p>
+</li>
+<li>
+<p>Dans le bloc 1, nous indiquons au programme quels fichiers d’entrée utiliser. Ici, nous déclarons quatre variables : une pour le genome de référence, une pour les lectures avant, une pour les lectures arrière et une pour le nom de l’échantillon. Cela est utile, car si nous voulons exécuter le pipeline sur un autre ensemble d’échantillons, de références ou de lectures, nous n’avons qu’à modifier les noms de ces fichiers une seule fois.</p>
+</li>
+<li>
+<p>Dans les blocs restants, nous appelons simplement les mêmes commandes que la semaine dernière pour aligner les reads et traiter le VCF, sauf que nous utilisons maintenant les noms de variables déclarés ci-dessus. Nous avons également ajouté quelques lignes <code>echo</code> pour afficher de l’information à l’écran afin de voir quelle étape est en cours d’exécution.</p>
+</li>
+</ol>
+<p>Pour exécuter tout le pipeline qui aligne les reads et appelle les VCF pour cet ensemble de données de séquençage, il suffit de taper :</p>
+<p><code>bash mtDNA_mappingVCF.sh</code></p>
+<p>et tout le pipeline s’exécute !</p>
+<hr>
+<h2 id="partie-hpc-2">Partie HPC 2</h2>
+<p>Vous vous souvenez lorsque nous avons discuté des variables environnementales comme $1, $2, $3 ? Je vous avais dit de ne pas les utiliser, car elles ont une fonction spéciale. Si nous définissons une variable à $1 dans le pipeline, elle prend le premier élément tapé après le programme et le stocke dans $1. De même, si nous définissons une variable à $2, elle prend le deuxième élément tapé après le programme et le stocke dans $2, et ainsi de suite.</p>
+<p>Que se passe-t-il si nous modifions le bloc 1 de notre pipeline comme suit :</p>
+<p><code>vi mtDNA_mappingVCF2.sh</code></p>
+<pre><code>############################
+# 1. Define input files.
+############################
+
+REF=$1 
+R1=$2
+R2=$3
+SAMPLE=$4
+
+</code></pre>
+<p>Lorsque nous appelons le programme <code>bash mtDNA_mappingVCF2.sh</code>, il génère plusieurs erreurs, car il s’attend à recevoir quatre informations supplémentaires (dans ce cas la référence, deux fichiers fastq et un nom d’échantillon) dont il a besoin pour s’exécuter.</p>
+<p>Donc, si nous exécutons :</p>
+<pre><code>bash mtDNA_mappingVCF2.sh reference_mt.fasta reads_sample1_F.fastq reads_sample1_R.fastq Sample1
+</code></pre>
+<p>bash stockera ces quatre chaînes de texte dans $1, $2, $3 et $4 pour utilisation dans notre script. Pour rendre cela plus clair, nous pouvons ensuite stocker ces variables dans des variables plus explicites comme suit :</p>
+<pre><code>REF=$1 
+R1=$2
+R2=$3
+SAMPLE=$4
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Environmental variable</th>
+<th>Stored information</th>
+<th>Variable name in pipeline</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$1</td>
+<td>reference_mt.fasta</td>
+<td>$REF</td>
+</tr>
+<tr>
+<td>$2</td>
+<td>reads_sample1_F.fastq</td>
+<td>$R1</td>
+</tr>
+<tr>
+<td>$3</td>
+<td>reads_sample1_R.fastq</td>
+<td>$R2</td>
+</tr>
+<tr>
+<td>$4</td>
+<td>Sample1</td>
+<td>$SAMPLE</td>
+</tr>
+</tbody>
+</table><p>Cela donne beaucoup de flexibilité au pipeline, car nous pouvons simplement modifier l’information sur la ligne de commande et exécuter le même pipeline ! Cela devient très utile si nous voulons exécuter le pipeline sur plusieurs échantillons ou ensembles de reads en même temps. Nous pouvons faire cela avec une boucle <strong>while</strong> et un fichier de métadonnées.</p>
+<pre><code>[orkin@login1 6_Unix]$ cat metadataHPC.txt
+reference_mt.fasta  reads_sample1_F.fastq  reads_sample1_R.fastq  Sample1
+reference_mt.fasta  mt_multiSNP_2000_R1.fastq  mt_multiSNP_2000_R2.fastq  Sample1
+</code></pre>
+<pre><code>while read line; do bash mtDNA_mappingVCF2.sh $line; done &lt;metadataHPC.txt
+</code></pre>
+<p>Et voilà ! Avec cette seule ligne de code, nous sommes passés de fastq à VCF filtré pour deux échantillons !</p>
+<hr>
+<h2 id="qu’est-ce-qu’un-hpc">Qu’est-ce qu’un HPC</h2>
+<p>Jusqu’à présent, tout notre travail s’est déroulé sur l’ordinateur infonuagique en ligne de commande. Bien que l’interface en ligne de commande que nous apprenons soit différente de l’interface graphique à laquelle vous êtes habitués sous Windows ou Mac, vous vous demandez probablement pourquoi tout cela est nécessaire. L’une des principales raisons d’utiliser la ligne de commande est que nous pouvons exécuter de nombreuses tâches en même temps. Contrairement à un ordinateur personnel, nous pouvons planifier des dizaines, des centaines, voire des milliers de tâches simultanément avec seulement quelques lignes de code.</p>
+<p>Un cluster de calcul haute performance (HPC) est un ensemble de nombreux ordinateurs connectés entre eux et gérés de façon à exécuter efficacement de gros calculs. Au lieu d’exécuter les analyses sur votre ordinateur portable, vous soumettez des tâches au cluster, qui les exécute sur des machines distantes puissantes.</p>
+<p>Un cluster typique comporte trois parties :</p>
+<ol>
+<li>
+<p><strong>Le nœud de connexion (login node)</strong>. C’est là où nous avons travaillé jusqu’à présent. C’est l’endroit où vous vous connectez via ssh, modifiez des scripts, déplacez des fichiers et soumettez des tâches avec <code>sbatch</code>. Nous ne l’utilisons pas pour des calculs lourds, car c’est un espace partagé.</p>
+</li>
+<li>
+<p><strong>Les nœuds de calcul (compute nodes)</strong>. Ce sont les ordinateurs puissants auxquels nous envoyons nos scripts pour exécuter notre code. Vous ne vous connectez jamais directement à ces nœuds.</p>
+</li>
+<li>
+<p><strong>Le planificateur de tâches (SLURM job scheduler)</strong>. SLURM est un programme qui gère toutes les tâches envoyées aux nœuds de calcul par les utilisateurs.</p>
+</li>
+</ol>
+<p>Pensez à un restaurant très occupé. Le rôle de l’hôte (SLURM) est d’asseoir une longue file de clients (les tâches en attente dans la file) à des tables vides de différentes tailles (les nœuds de calcul) afin qu’ils puissent manger.</p>
+<hr>
+<h2 id="envoyer-une-tâche-job-au-cluster">Envoyer une tâche (job) au cluster</h2>
+<p>Pour envoyer notre tâche aux nœuds de calcul, nous devons ajouter les lignes suivantes au début de notre script (juste sous #!/bin/bash) :</p>
+<pre><code>#SBATCH --job-name=Joe_vcf_pipeline
+#SBATCH --cpus-per-task=1  
+#SBATCH --mem=1G  
+#SBATCH --time=00:10:00  
+#SBATCH --output=%x_%j.out  
+#SBATCH --error=%x_%j.err
+</code></pre>
+<p>Analysons cela. Les lignes <strong>#SBATCH</strong> indiquent au cluster les ressources dont votre tâche a besoin avant son exécution.</p>
+<p><code>#SBATCH --job-name=bwa_pipeline</code><br>
+Cela donne à votre tâche un nom lisible par un humain, ce qui rend les fichiers de sortie plus faciles à interpréter. Vous pouvez le changer pour ce que vous voulez.</p>
+<p><code>#SBATCH --cpus-per-task=1</code><br>
+Demande le nombre de cœurs CPU pour la tâche. Plus il y a de CPU, plus la tâche s’exécute rapidement.</p>
+<p><code>#SBATCH --mem=1G</code><br>
+Demande la quantité de RAM pour la tâche. Trop peu de RAM et la tâche plantera, mais trop de RAM et elle restera en attente dans la file (queue) avant de démarrer.</p>
+<p><code>#SBATCH --time=00:10:00</code><br>
+Définit le temps maximal demandé pour l’exécution de la tâche. Les demandes de temps plus longues restent plus longtemps en attente dans la file, mais si votre tâche n’est pas terminée avant le temps demandé, elle sera arrêtée. Le format est heures:minutes:secondes.</p>
+<p><code>#SBATCH --output=%x_%j.out</code><br>
+Spécifie un nom de fichier pour la sortie standard (ce qui serait normalement affiché à l’écran). %x est un code pour le nom de la tâche, et %j pour l’identifiant de la tâche (job ID), un numéro unique que l’ordinateur assigne à chaque tâche. Par exemple, cela peut créer un fichier appelé Joe_bwa_pipeline_12.out.</p>
+<p><code>#SBATCH --error=%x_%j.err</code><br>
+Spécifie un nom de fichier pour la sortie d’erreur standard (les messages d’erreur normalement affichés à l’écran). Cela peut créer un fichier appelé Joe_bwa_pipeline_12.err.</p>
+<p><strong>Dans ce pipeline :</strong> cela ressemble à ceci :</p>
+<p><code>vi mtDNA_mappingVCF2.sbatch</code></p>
+<pre><code>#!/bin/bash  
+#SBATCH --job-name=Joe_vcf_pipeline  
+#SBATCH --cpus-per-task=1  
+#SBATCH --mem=1G  
+#SBATCH --time=00:10:00  
+#SBATCH --output=%x_%j.out  
+#SBATCH --error=%x_%j.err
+
+############################
+# 0. Load modules
+############################
+
+module load bwa
+module load samtools
+module load bcftools
+
+############################
+# 1. Define input files.
+############################
+
+REF=$1
+R1=$2
+R2=$3
+SAMPLE=$4
+
+############################
+# 2. Index reference files # don't need to run
+############################
+
+# echo "Indexing reference..."
+
+# samtools faidx $REF 
+# bwa index $REF
+
+############################
+# 3. Align reads to reference
+############################
+
+echo "Aligning reads..."
+
+bwa mem $REF $R1 $R2 &gt; ${SAMPLE}.sam
+
+############################
+# 4. Convert SAM → sorted BAM
+############################
+
+echo "Converting to BAM..."
+
+samtools view -bS ${SAMPLE}.sam | \
+samtools sort -o ${SAMPLE}.sorted.bam
+
+############################
+# 5. Index BAM
+############################
+
+samtools index ${SAMPLE}.sorted.bam
+
+############################
+# 6. Basic BAM filtering
+# (remove low mapping quality reads)
+############################
+
+echo "Filtering BAM..."
+
+samtools view -b -q 20 ${SAMPLE}.sorted.bam &gt; ${SAMPLE}.filtered.bam
+
+samtools index ${SAMPLE}.filtered.bam
+
+############################
+# 7. Call variants
+############################
+
+echo "Calling variants..."
+
+bcftools mpileup -Ou -f $REF ${SAMPLE}.filtered.bam | \
+bcftools call -mv -Ov -o ${SAMPLE}.vcf
+
+############################
+# 8. Filter VCF
+# (keep QUAL &gt; 30)
+############################
+
+echo "Filtering VCF..."
+
+bcftools filter -i 'QUAL&gt;30' ${SAMPLE}.vcf -o ${SAMPLE}.filtered.vcf
+
+echo "Pipeline complete!"
+</code></pre>
+<hr>
+<h2 id="exécution-sur-le-cluster">Exécution sur le cluster</h2>
+<p>Pour envoyer la tâche aux nœuds de calcul, nous utilisons la commande <strong>sbatch</strong> au lieu de bash, et nous pouvons enregistrer le fichier du pipeline avec une extension différente afin de pouvoir l’identifier. Une fois la tâche soumise, le cluster nous indique :</p>
+<pre><code>[orkin@login1 TMP]$ sbatch mtDNA_mappingVCF2.sbatch
+Submitted batch job 23
+</code></pre>
+<p>Nous pouvons ensuite vérifier l’état de la tâche avec la commande <strong>squeue</strong>.</p>
+<pre><code>[orkin@login1 TMP]$ squeue
+JOBID USER  ACCOUNT NAME  ST  TIME_LEFT NODES CPUS TRES_PER_N MIN_MEM NODELIST (REASON)
+23  orkin def-sponsor0 bwa_pipeline  R 0:58 1  1  N/A  1G nodecpupool1 (None)
+</code></pre>
+<p>Cela nous donne des informations sur chaque tâche  dans la file d’attente. Les éléments les plus importants sont : qui exécute la tâche (USER), le nom de la tâche (NAME), son statut (ST) et le temps restant (TIME_LEFT). Notez les statuts suivants : <strong>PD</strong> = en attente dans la file ; <strong>CF</strong> = en cours d’initialisation ; <strong>R</strong> = en cours d’exécution.</p>
+<p>Si le cluster est resté inactif pendant un certain temps, vous pourriez voir votre tâche bloquée en état CF pendant quelques minutes. Une fois la première tâche lancée, les suivantes s’exécuteront rapidement. Si vos tâches restent bloquées et que vous souhaitez toutes les retirer de la file, vous pouvez taper <strong>scancel</strong> suivi de votre identifiant utilisateur. Par exemple : <code>scancel orkin</code></p>
+<p>Notez également que nous pouvons exécuter le pipeline sur un très grand nombre d’échantillons en même temps en utilisant une boucle <strong>while</strong> avec un fichier de métadonnées.</p>
+<p>Chaque ligne du fichier de métadonnées correspond à une liste séparée par des tabulations contenant les éléments nécessaires ($1 $2 $3 $4) pour exécuter le pipeline.</p>
+<pre><code>[orkin@login1 TMP]$ cat metadata_batch.txt
+reference_mt.fasta reads_sample1_F.fastq  reads_sample1_R.fastq  Sample1
+reference_mt.fasta reads_sample1_F.fastq  reads_sample1_R.fastq  Sample2
+reference_mt.fasta reads_sample1_F.fastq  reads_sample1_R.fastq  Sample3
+reference_mt.fasta reads_sample1_F.fastq  reads_sample1_R.fastq  Sample4
+reference_mt.fasta  mt_multiSNP_2000_R1.fastq  mt_multiSNP_2000_R2.fastq  Sample5
+reference_mt.fasta  mt_multiSNP_2000_R1.fastq  mt_multiSNP_2000_R2.fastq  Sample6
+reference_mt.fasta  mt_multiSNP_2000_R1.fastq  mt_multiSNP_2000_R2.fastq  Sample7
+reference_mt.fasta  mt_multiSNP_2000_R1.fastq  mt_multiSNP_2000_R2.fastq  Sample8
+</code></pre>
+<pre><code>while read line; do sbatch mtDNA_mappingVCF2.sbatch $line; done &lt; metadata_batch.txt
+</code></pre>
+<p>Et voilà, nous avons exécuté le pipeline 8 fois sur différents échantillons !</p>
+<p><strong>Remarque</strong> : il ne s’agit pas de 8 ensembles de lectures différents, car il s’agit uniquement d’un exemple. Dans la réalité, les paires de fichiers fastq seraient différentes pour chaque échantillon et auraient leurs propres noms uniques.</p>
+</div>
+</body>
+
+</html>
