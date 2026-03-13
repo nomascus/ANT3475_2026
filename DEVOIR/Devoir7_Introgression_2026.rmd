@@ -8,12 +8,11 @@ date: "2024-03-26"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+setwd("~/scratch/7_introgression/") 
 
 > Charger admixr et les données
 
 ``` {r}
-
-# Remplacez USERID par votre identifiant utilisateur dans la commande suivante, puis copiez-le et collez-le dans la console ci-dessous, puis cliquez sur Entrée : setwd("~/projects/def-sponsor00/USERID/7_introgression/") 
 
 library(admixr)
 library(ggplot2)
