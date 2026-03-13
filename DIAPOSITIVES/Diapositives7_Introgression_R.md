@@ -98,10 +98,9 @@ echo "export PATH=\"$PATH:/home/USERID/scratch/7_introgression/AdmixTools/bin\""
 source ~/.bashrc
 cp /cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/r/4.4.0/lib64/R/etc/Renviron ~/.Renviron
 echo "PATH=$PATH" >> ~/.Renviron
-
 ```
 
-Passez maintenant à l’onglet Rstudio de votre navigateur. Allez dans la fenêtre en bas à droite de l’écran et cliquez sur  _Files_. Vous obtiendrez ainsi une liste des dossiers et des fichiers de votre répertoire personnel (~) sur l’ordinateur dématérialisé. Naviguez jusqu’au nouveau dossier (7_introgression) en cliquant sur les icônes de dossier comme vous le feriez sur votre ordinateur personnel. Cliquez sur le fichier de l’ensemble de problèmes que nous venons de télécharger sur l’ordinateur cloud (Introgression_problemSet_francais_2025.rmd).
+Passez maintenant à l’onglet Rstudio de votre navigateur. Allez dans la fenêtre en bas à droite de l’écran et cliquez sur  _Files_. Vous obtiendrez ainsi une liste des dossiers et des fichiers de votre répertoire personnel (~) sur l’ordinateur dématérialisé. Naviguez jusqu’au nouveau dossier (7_introgression) en cliquant sur les icônes de dossier comme vous le feriez sur votre ordinateur personnel. Cliquez sur le fichier de l’ensemble de problèmes que nous venons de télécharger sur l’ordinateur cloud (Devoir7_Introgression_2026.rmd).
 
 Cela devrait ouvrir un fichier R markdown dans la fenêtre en haut à gauche, qui vous permettra de cliquer sur le code R. Les fichiers R markdown comportent des blocs de code séparés en gris et un espace pour les commentaires en blanc.
 
