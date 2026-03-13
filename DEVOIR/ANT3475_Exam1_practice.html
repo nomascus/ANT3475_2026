@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam practice</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="exam-practice">Exam Practice</h1>
+<p><strong>Lors de l’examen, vous pouvez utiliser vos diapositives de cours et vos devoirs, mais vous NE POUVEZ PAS utiliser Internet ou l’IA. Si je vous vois ouvrir un autre programme ou navigateur Internet, vous obtiendrez un zéro à l’examen.</strong></p>
+<ol>
+<li>
+<p>Écrivez la commande pour déplacer un fichier nommé <code>results.txt</code> du répertoire courant vers un répertoire nommé <code>output</code> situé dans le même répertoire.</p>
+</li>
+<li>
+<p>Quelle est la différence entre les guillemets simples et les guillemets doubles en bash ?</p>
+</li>
+<li>
+<p>Comment concaténez-vous les valeurs de deux variables, <code>var1</code> et <code>var2</code>, et stockez-vous le résultat dans une nouvelle variable <code>var3</code> ?</p>
+</li>
+<li>
+<p>Écrivez une expression régulière pour correspondre à une adresse e-mail.</p>
+</li>
+<li>
+<p>Écrivez une commande Perl pour substituer toutes les instances de ATG par TAC dans la ligne de séquence suivante ATGCGAAGGATGAAG.</p>
+</li>
+<li>
+<p>Quel est le résultat du script suivant ? Les 5 premières lignes du fichier <code>metadata.txt</code> sont :</p>
+</li>
+</ol>
+<p>primates<br>
+carnivores<br>
+cétacés<br>
+félidés<br>
+canidés</p>
+<pre><code>#!/bin/bash
+
+while read line; do
+   alignment=$(echo $line | awk '{print $1}')
+   echo "iqtree2 -s ${alignment}.aligned.gb.fasta -m MFP -b 1000"
+done &lt; metadata.txt
+</code></pre>
+<ol>
+<li>
+<p>mv results.txt output</p>
+</li>
+<li>
+<p>Guillemets simples <code>' '</code> : tout est pris littéralement.<br>
+Guillemets doubles <code>" "</code> : les variables (<code>$var</code>), substitutions (<code>$(...)</code>) et certains échappements (<code>\</code>) sont interprétés.</p>
+</li>
+<li>
+<p>var3=<span class="katex--inline"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>v</mi><mi>a</mi><mi>r</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">{var1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height: 0.64444em; vertical-align: 0em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right: 0.03588em;">v</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right: 0.02778em;">r</span><span class="mord">1</span></span></span></span></span></span>{var2}</p>
+</li>
+<li>
+<p>^\w+@\w+\.\w+$</p>
+</li>
+<li>
+<p>echo ATGCGAAGGATGAAG | perl -lpe ‘s/ATG/TAC/g’</p>
+</li>
+<li>
+<p>Pour chaque ligne du fichier metadata.txt, le script prend le texte de la première colonne, l’enregistre dans une variable appelée alignment, puis l’insère dans la commande  commençant par iqtree2 et l’affiche à l’écran.</p>
+</li>
+</ol>
+</div>
+</body>
+
+</html>

@@ -1,0 +1,73 @@
+---
+title: "ANT3475 Devoir 7 Introgression 2026"
+output: html_document
+date: "2024-03-26"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+> Charger admixr et les données
+
+``` {r}
+
+# Remplacez USERID par votre identifiant utilisateur dans la commande suivante, puis copiez-le et collez-le dans la console ci-dessous, puis cliquez sur Entrée : setwd("~/projects/def-sponsor00/USERID/7_introgression/") 
+
+library(admixr)
+library(ggplot2)
+
+snps <- eigenstrat(
+  ind = "snps/snps.ind", 
+  snp = "snps/snps.snp", 
+  geno = "snps/snps.geno")
+
+```
+
+# Question 1 Explorez les fichiers que nous avons téléchargés en utilisant la fonction less dans bash. Quel type d'information est contenue dans les fichiers snps.ind, snps.geno et snps.snp? INDICE : ces fichiers contiennent presque les mêmes informations qu'un VCF, mais ils sont dans un format différent, appelé format EIGENSTRAT. Regardez ici pour plus d'informations : https://reich.hms.harvard.edu/software/InputFileFormats
+
+> Exécutez Dstats sur des populations uniques
+
+```{r}
+
+d( data=snps, W = 'French', X = 'Yoruba', Y ='Vindija', Z = 'Chimp')
+
+```
+
+# QUESTION 2 : Que signifie chaque colonne dans le tableau des résultats de ce test de la statistique D ?
+
+# QUESTION 3 : Que signifie la valeur positive de D dans cet exemple ? Y a-t-il des preuves de flux de gènes entre le néandertalien de Vindija et l'une des populations humaines modernes ?
+
+# QUESTION 4 : Comment savons-nous si la valeur de D est significativement différente de zéro ?
+
+# QUESTION 5 : Comment les chiffres changent-ils si vous inversez l'ordre des populations françaises et yorubas (inversez les valeurs dans W et X) ? Que signifie la valeur positive ou négative de la statistique D ?
+
+# QUESTION 6 : Que se passe-t-il si vous inversez l'ordre de la population française (inversez les valeurs dans W et Y) ?
+
+> Examinons plusieurs autres populations humaines d'Europe, d'Afrique et d'Asie pour voir s'il existe un schéma cohérent d'introgression entre les néandertaliens et les humains dans certaines parties du monde.
+
+```{r}
+
+pops <- c("French","Sardinian","Han","Papuan","Khomani_San","Mbuti","Dinka")  
+
+Dstats <- d( data=snps, W= pops, X = 'Yoruba', Y ='Vindija', Z = 'Chimp')
+
+Dstats
+```
+
+# QUESTION 7 : Quelles populations humaines modernes montrent des niveaux significatifs de partage d'allèles avec les néandertaliens ?
+
+> Traçons ces résultats avec des barres d'erreur en montrant les valeurs D significatives en bleu et les valeurs D non significatives en rouge
+
+```{r}
+
+ggplot (Dstats, aes(x=W, y=D, color =abs(Zscore) > 2)) +
+  geom_point()+
+  geom_hline(yintercept = 0, linetype=2)+
+  geom_errorbar(aes(ymin= D - 2*stderr, ymax = D + 2*stderr))
+
+
+```
+
+# QUESTION 8 : En sachant où les néandertaliens ont vécu, ce résultat a-t-il du sens ? Si oui, pourquoi ?
