@@ -4,7 +4,7 @@
 
 R est un langage de programmation largement utilisé en informatique statistique et biologique. Il est similaire à Unix, mais la syntaxe du code est un peu différente. Nous n’allons pas passer beaucoup de temps à apprendre R, mais nous l’utiliserons pour quelques applications dans ce cours. Commençons par charger l’interface du studio R.
 
-Allez d’abord sur le site web suivant et connectez-vous avec le login et le mot de passe de votre compte cloud ANT3814 :
+Allez d’abord sur le site web suivant et connectez-vous avec le login et le mot de passe de votre compte cloud ANT3475 :
 
 [https://jupyter.ant3475.calculquebec.cloud/hub/login](https://jupyter.ant3814.calculquebec.cloud/hub/login)
 
