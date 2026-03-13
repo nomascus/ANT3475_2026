@@ -54,8 +54,7 @@ Nous pouvons appeler ces quatre groupes les populations W, X, Y et Z.
 
 Une façon de voir cela est d’utiliser la statistique D suivante :
 
-### Sites BABA - # Sites ABBA  
-***
+### <u>Sites BABA - # Sites ABBA 
 ### Sites BABA + # Sites ABBA
 
 Les statistiques 𝐷 sont basées sur la comparaison des proportions de motifs de sites BABA et ABBA observés dans les données. Un écart significatif de 𝐷 par rapport à zéro indique un excès de partage d’allèles entre la première et la troisième population (𝐷 positif), ou un excès de partage d’allèles entre la deuxième et la troisième population (𝐷 négatif). Si nous obtenons 𝐷 qui n’est pas significativement différent de 0, cela suggère que les première et deuxième populations forment un clade et ne diffèrent pas dans le taux de partage d’allèles avec la troisième population (c’est l’hypothèse nulle contre laquelle les données sont comparées).
@@ -64,7 +63,7 @@ Les statistiques 𝐷 sont basées sur la comparaison des proportions de motifs 
 
 Nous devons télécharger quelques fichiers pour travailler. Cliquez sur l’autre onglet de votre navigateur, qui devrait ressembler au terminal ssh, mais en blanc et non en noir. L’invite de commande sera différente, mais fonctionnera comme un terminal normal.
 
-Tout d’abord, nous devons créer un nouveau dossier pour le cours de cette semaine (7_introgression), alors  **créons ce dossier à l’emplacement suivant, en remplaçant USERID par votre nom d’utilisateur**.
+Tout d’abord, nous devons créer un nouveau dossier pour le cours de cette semaine (7_introgression), alors.
 
 ```
 cd ~/scratch
@@ -75,10 +74,9 @@ téléchargeons et extrayons quelques fichiers :
 
 ```
 cd 7_introgression
-wget https://raw.githubusercontent.com/nomascus/ANT3814/refs/heads/main/PROBLEM_SETS/Introgression_problemSet_francais_2025.rmd 
+wget https://raw.githubusercontent.com/nomascus/ANT3475_2026/refs/heads/main/DEVOIR/Devoir7_Introgression_2026.rmd
 wget --no-check-certificate https://bioinf.eva.mpg.de/admixr/snps.tar.gz
 tar -xvf snps.tar.gz
-
 ```
 
 Ensuite, nous devons installer une version de admixtools sur la ligne de commande.
