@@ -1,4 +1,6 @@
-﻿# R Studio
+﻿# ANT3475 : Introgression & Rstudio
+
+## R Studio
 
 R est un langage de programmation largement utilisé en informatique statistique et biologique. Il est similaire à Unix, mais la syntaxe du code est un peu différente. Nous n’allons pas passer beaucoup de temps à apprendre R, mais nous l’utiliserons pour quelques applications dans ce cours. Commençons par charger l’interface du studio R.
 
